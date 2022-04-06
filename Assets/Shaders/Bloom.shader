@@ -61,7 +61,7 @@ Shader "Hidden/Bloom" {
             }
 
             float4 fp(v2f i) : SV_TARGET {
-                return Prefilter(float4(SampleBox(i.uv, 1.0f), 1.0f));
+                return Prefilter(pow(float4(SampleBox(i.uv, 1.0f), 1.0f), 2.2f));
             }
             ENDCG
         }
@@ -104,10 +104,11 @@ Shader "Hidden/Bloom" {
 
             sampler2D _OriginalTex;
             float _Intensity;
+            float _UpDelta;
 
             float4 fp(v2f i) : SV_TARGET {
                 float4 col = tex2D(_OriginalTex, i.uv);
-                col.rgb +=  pow(_Intensity * pow(SampleBox(i.uv, 0.5f), 1.0f / 2.2f), 2.2f);
+                col.rgb += _Intensity * SampleBox(i.uv, _UpDelta);
 
                 return col;
             }
