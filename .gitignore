@@ -5,6 +5,7 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
+/Assets/Scenes*
 /Assets/AssetStoreTools*
 /Assets/Ignored*
 /Assets/AllSkyFree*
