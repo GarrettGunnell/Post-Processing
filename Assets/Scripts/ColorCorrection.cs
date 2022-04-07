@@ -9,7 +9,7 @@ public class ColorCorrection : MonoBehaviour {
     [Range(0.0f, 10.0f)]
     public float exposure = 1.0f;
 
-    [Range(-1.0f, 1.0f)]
+    [Range(-100.0f, 100.0f)]
     public float temperature, tint;
 
     [Range(0.0f, 2.0f)]
@@ -33,8 +33,8 @@ public class ColorCorrection : MonoBehaviour {
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
         postProcessMat.SetFloat("_Exposure", exposure);
-        postProcessMat.SetFloat("_Temperature", temperature);
-        postProcessMat.SetFloat("_Tint", tint);
+        postProcessMat.SetFloat("_Temperature", temperature / 100.0f);
+        postProcessMat.SetFloat("_Tint", tint / 100.0f);
         postProcessMat.SetFloat("_Contrast", contrast);
         postProcessMat.SetFloat("_Brightness", brightness);
         postProcessMat.SetVector("_ColorFilter", colorFilter);
