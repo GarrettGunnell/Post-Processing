@@ -79,31 +79,19 @@ Shader "Hidden/ColorCorrection" {
                 fixed4 col = tex2D(_MainTex, i.uv);
 
                 col.rgb *= _Exposure;
-
                 col = max(0.0f, col);
-                col = min(1.0f, col);
 
                 col.rgb = WhiteBalance(col.rgb, _Temperature, _Tint);
-
                 col = max(0.0f, col);
-                col = min(1.0f, col);
 
                 col.rgb = _Contrast * (col.rgb - 0.5f) + 0.5f + _Brightness;
-
                 col = max(0.0f, col);
-                col = min(1.0f, col);
 
                 col.rgb *= _ColorFilter.rgb;
-                
                 col = max(0.0f, col);
-                col = min(1.0f, col);
 
-                float4 desaturated = luminance(col.rgb);
-
-                col.rgb = lerp(desaturated.rgb, col.rgb, _Saturation);
-
+                col.rgb = lerp(luminance(col.rgb), col.rgb, _Saturation);
                 col = max(0.0f, col);
-                col = min(1.0f, col);
 
                 return col;
             }
