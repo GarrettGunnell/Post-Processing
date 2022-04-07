@@ -6,6 +6,9 @@ using UnityEngine;
 public class ColorCorrection : MonoBehaviour {
     public Shader postProcessingShader;
 
+    [Range(0.0f, 10.0f)]
+    public float exposure = 1.0f;
+
     [Range(0.0f, 2.0f)]
     public float contrast;
     
@@ -23,6 +26,7 @@ public class ColorCorrection : MonoBehaviour {
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
+        postProcessMat.SetFloat("_Exposure", exposure);
         postProcessMat.SetFloat("_Contrast", contrast);
         postProcessMat.SetFloat("_Brightness", brightness);
         postProcessMat.SetFloat("_Saturation", saturation);
