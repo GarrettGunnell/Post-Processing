@@ -108,7 +108,7 @@ Shader "Hidden/Bloom" {
 
             float4 fp(v2f i) : SV_TARGET {
                 float4 col = tex2D(_OriginalTex, i.uv);
-                col.rgb += _Intensity * SampleBox(i.uv, _UpDelta);
+                col.rgb += _Intensity * pow(SampleBox(i.uv, _UpDelta), 1.0f / 2.2f);
 
                 return col;
             }
