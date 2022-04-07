@@ -33,9 +33,9 @@ Shader "Hidden/SSFog" {
             float4 _FogColor;
             float _FogDensity, _FogOffset;
 
-            fixed4 fp(v2f i) : SV_Target {
+            float4 fp(v2f i) : SV_Target {
                 int x, y;
-                fixed4 col = tex2D(_MainTex, i.uv);
+                float4 col = tex2D(_MainTex, i.uv);
                 float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
                 depth = Linear01Depth(depth);
 

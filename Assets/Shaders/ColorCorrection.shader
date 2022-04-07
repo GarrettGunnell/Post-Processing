@@ -75,8 +75,8 @@ Shader "Hidden/ColorCorrection" {
                 return mul(LMS_2_LIN_MAT, lms);
             }
 
-            fixed4 fp(v2f i) : SV_Target {
-                fixed4 col = tex2D(_MainTex, i.uv);
+            float4 fp(v2f i) : SV_Target {
+                float4 col = tex2D(_MainTex, i.uv);
 
                 col.rgb *= _Exposure;
                 col = max(0.0f, col);

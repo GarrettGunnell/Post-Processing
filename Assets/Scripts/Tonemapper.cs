@@ -5,6 +5,10 @@ using UnityEngine;
 public class Tonemapper : MonoBehaviour {
     public Shader tonemapperShader;
 
+    public enum Tonemappers {
+        RGBClamp = 0,
+    } public Tonemappers toneMapper;
+
     private Material tonemapperMat;
     
     void Start() {
@@ -13,6 +17,6 @@ public class Tonemapper : MonoBehaviour {
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
-        Graphics.Blit(source, destination, tonemapperMat);
+        Graphics.Blit(source, destination, tonemapperMat, (int)toneMapper);
     }
 }

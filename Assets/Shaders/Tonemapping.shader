@@ -5,11 +5,7 @@ Shader "Hidden/Tonemapping" {
 
     SubShader {
 
-        Pass {
-            CGPROGRAM
-            #pragma vertex vp
-            #pragma fragment fp
-
+        CGINCLUDE
             #include "UnityCG.cginc"
 
             struct VertexData {
@@ -30,9 +26,16 @@ Shader "Hidden/Tonemapping" {
             }
 
             sampler2D _MainTex;
+        ENDCG
 
-            fixed4 fp(v2f i) : SV_Target {
-                return tex2D(_MainTex, i.uv);
+        // No Tonemapping (Clamp RGB)
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float4 fp(v2f i) : SV_Target {
+                return saturate(tex2D(_MainTex, i.uv));
             }
             ENDCG
         }
