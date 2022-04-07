@@ -85,6 +85,9 @@ Shader "Hidden/ColorCorrection" {
 
                 col.rgb = WhiteBalance(col.rgb, _Temperature, _Tint);
 
+                col = max(0.0f, col);
+                col = min(1.0f, col);
+
                 col.rgb = _Contrast * (col.rgb - 0.5f) + 0.5f + _Brightness;
 
                 col = max(0.0f, col);
