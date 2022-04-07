@@ -1,4 +1,4 @@
-Shader "Hidden/ColorCorrection" {
+Shader "Hidden/Gamma" {
     Properties {
         _MainTex ("Texture", 2D) = "white" {}
     }
@@ -30,28 +30,10 @@ Shader "Hidden/ColorCorrection" {
             }
 
             sampler2D _MainTex;
-            float _Contrast, _Brightness, _Saturation, _Gamma;
-
-            float luminance(float3 color) {
-                return dot(color, float3(0.299f, 0.587f, 0.114f));
-            }
+            float _Gamma;
 
             fixed4 fp(v2f i) : SV_Target {
-                fixed4 col = tex2D(_MainTex, i.uv);
-
-                col = _Contrast * (col - 0.5f) + 0.5f + _Brightness;
-
-                col = max(0.0f, col);
-                col = min(1.0f, col);
-
-                float4 desaturated = luminance(col.rgb);
-
-                col = lerp(desaturated, col, _Saturation);
-
-                col = max(0.0f, col);
-                col = min(1.0f, col);
-                
-                return col;
+                return float4(pow(tex2D(_MainTex, i.uv).rgb, _Gamma), 1.0f);
             }
             ENDCG
         }
