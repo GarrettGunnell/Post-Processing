@@ -30,6 +30,7 @@ Shader "Hidden/ColorCorrection" {
             }
 
             sampler2D _MainTex;
+            float4 _ColorFilter;
             float _Exposure, _Contrast, _Brightness, _Saturation, _Gamma;
 
             float luminance(float3 color) {
@@ -39,19 +40,24 @@ Shader "Hidden/ColorCorrection" {
             fixed4 fp(v2f i) : SV_Target {
                 fixed4 col = tex2D(_MainTex, i.uv);
 
-                col *= _Exposure;
+                col.rgb *= _Exposure;
 
                 col = max(0.0f, col);
                 col = min(1.0f, col);
 
-                col = _Contrast * (col - 0.5f) + 0.5f + _Brightness;
+                col.rgb = _Contrast * (col.rgb - 0.5f) + 0.5f + _Brightness;
 
+                col = max(0.0f, col);
+                col = min(1.0f, col);
+
+                col.rgb *= _ColorFilter.rgb;
+                
                 col = max(0.0f, col);
                 col = min(1.0f, col);
 
                 float4 desaturated = luminance(col.rgb);
 
-                col = lerp(desaturated, col, _Saturation);
+                col.rgb = lerp(desaturated.rgb, col.rgb, _Saturation);
 
                 col = max(0.0f, col);
                 col = min(1.0f, col);
