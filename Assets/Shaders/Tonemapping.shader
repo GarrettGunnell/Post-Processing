@@ -28,6 +28,23 @@ Shader "Hidden/Tonemapping" {
             sampler2D _MainTex;
         ENDCG
 
+        // Debug HDR
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float4 fp(v2f i) : SV_Target {
+                float4 col = tex2D(_MainTex, i.uv);
+
+                if (col.r > 1.0f || col.g > 1.0f || col.b > 1.0f)
+                    return col;
+                
+                return 0.0f;
+            }
+            ENDCG
+        }
+
         // No Tonemapping (Clamp RGB)
         Pass {
             CGPROGRAM

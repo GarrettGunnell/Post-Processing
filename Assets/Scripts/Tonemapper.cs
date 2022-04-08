@@ -6,7 +6,8 @@ public class Tonemapper : MonoBehaviour {
     public Shader tonemapperShader;
 
     public enum Tonemappers {
-        RGBClamp = 0,
+        DebugHDR = 0,
+        RGBClamp
     } public Tonemappers toneMapper;
 
     private Material tonemapperMat;
