@@ -9,11 +9,15 @@ public class Tonemapper : MonoBehaviour {
     public enum Tonemappers {
         DebugHDR = 0,
         RGBClamp,
-        TumblinRushmeier
+        TumblinRushmeier,
+        Schlick
     } public Tonemappers toneMapper;
 
     //Tumblin Rushmeier Parameters
     public float Lavg, Ldmax, Cmax;
+
+    //Schlick Parameters
+    public float p, hiVal;
 
     private Material tonemapperMat;
     
@@ -26,6 +30,9 @@ public class Tonemapper : MonoBehaviour {
         tonemapperMat.SetFloat("_Lavg", Lavg);
         tonemapperMat.SetFloat("_Ldmax", Ldmax);
         tonemapperMat.SetFloat("_Cmax", Cmax);
+        tonemapperMat.SetFloat("_P", p);
+        tonemapperMat.SetFloat("_HiVal", hiVal);
+
         Graphics.Blit(source, destination, tonemapperMat, (int)toneMapper);
     }
 }
@@ -35,7 +42,8 @@ public class Tonemapper : MonoBehaviour {
 public class TonemapperEditor : Editor {
     SerializedProperty tonemapperShader, 
                        toneMapper,
-                       Lavg, Ldmax, Cmax;
+                       Lavg, Ldmax, Cmax,
+                       p, hiVal;
 
     void OnEnable() {
         tonemapperShader = serializedObject.FindProperty("tonemapperShader");
@@ -43,6 +51,8 @@ public class TonemapperEditor : Editor {
         Lavg = serializedObject.FindProperty("Lavg");
         Ldmax = serializedObject.FindProperty("Ldmax");
         Cmax = serializedObject.FindProperty("Cmax");
+        p = serializedObject.FindProperty("p");
+        hiVal = serializedObject.FindProperty("hiVal");
     }
 
     public override void OnInspectorGUI() {
@@ -57,6 +67,10 @@ public class TonemapperEditor : Editor {
                 EditorGUILayout.Slider(Lavg, 0.0f, 100.0f);
                 EditorGUILayout.Slider(Ldmax, 1.0f, 150.0f);
                 EditorGUILayout.Slider(Cmax, 1.0f, 100.0f);
+                break;
+            case Tonemapper.Tonemappers.Schlick:
+                EditorGUILayout.Slider(p, 1.0f, 100.0f);
+                EditorGUILayout.Slider(hiVal, 1.0f, 150.0f);
                 break;
         }
 

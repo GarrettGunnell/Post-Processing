@@ -89,5 +89,27 @@ Shader "Hidden/Tonemapping" {
             }
             ENDCG
         }
+
+        // Schlick
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float _P, _HiVal;
+
+            float4 fp(v2f i) : SV_Target {
+                float3 col = tex2D(_MainTex, i.uv).rgb;
+
+                float Lin = luminance(col);
+
+                float Lout = (_P * Lin) / (_P * Lin - Lin + _HiVal);
+
+                float3 Cout = col / Lin * Lout;
+
+                return float4(saturate(Cout), 1.0f);
+            }
+            ENDCG
+        }
     }
 }
