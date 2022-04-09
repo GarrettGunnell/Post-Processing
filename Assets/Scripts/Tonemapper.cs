@@ -8,8 +8,12 @@ public class Tonemapper : MonoBehaviour {
 
     public enum Tonemappers {
         DebugHDR = 0,
-        RGBClamp
+        RGBClamp,
+        TumblinRushmeier
     } public Tonemappers toneMapper;
+
+    //Tumblin Rushmeier Parameters
+    public float Lavg, Ldmax, Cmax;
 
     private Material tonemapperMat;
     
@@ -19,6 +23,9 @@ public class Tonemapper : MonoBehaviour {
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
+        tonemapperMat.SetFloat("_Lavg", Lavg);
+        tonemapperMat.SetFloat("_Ldmax", Ldmax);
+        tonemapperMat.SetFloat("_Cmax", Cmax);
         Graphics.Blit(source, destination, tonemapperMat, (int)toneMapper);
     }
 }
@@ -26,18 +33,33 @@ public class Tonemapper : MonoBehaviour {
 [CustomEditor(typeof(Tonemapper))]
 [CanEditMultipleObjects]
 public class TonemapperEditor : Editor {
-    SerializedProperty tonemapperShader;
-    SerializedProperty toneMapper;
+    SerializedProperty tonemapperShader, 
+                       toneMapper,
+                       Lavg, Ldmax, Cmax;
 
     void OnEnable() {
         tonemapperShader = serializedObject.FindProperty("tonemapperShader");
         toneMapper = serializedObject.FindProperty("toneMapper");
+        Lavg = serializedObject.FindProperty("Lavg");
+        Ldmax = serializedObject.FindProperty("Ldmax");
+        Cmax = serializedObject.FindProperty("Cmax");
     }
 
     public override void OnInspectorGUI() {
         serializedObject.Update();
         EditorGUILayout.PropertyField(tonemapperShader);
         EditorGUILayout.PropertyField(toneMapper);
+
+        Tonemapper.Tonemappers t = (Tonemapper.Tonemappers)toneMapper.enumValueIndex;
+
+        switch(t) {
+            case Tonemapper.Tonemappers.TumblinRushmeier:
+                EditorGUILayout.Slider(Lavg, 0.0f, 100.0f);
+                EditorGUILayout.Slider(Ldmax, 1.0f, 150.0f);
+                EditorGUILayout.Slider(Cmax, 1.0f, 100.0f);
+                break;
+        }
+
         serializedObject.ApplyModifiedProperties();
     }
 }
