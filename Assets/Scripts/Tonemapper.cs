@@ -7,33 +7,47 @@ public class Tonemapper : MonoBehaviour {
     public Shader tonemapperShader;
 
     public enum Tonemappers {
-        DebugHDR = 0,
+        DebugHDR = 1,
         RGBClamp,
         TumblinRushmeier,
         Schlick
     } public Tonemappers toneMapper;
 
     //Tumblin Rushmeier Parameters
-    public float Lavg, Ldmax, Cmax;
+    public float Ldmax, Cmax;
 
     //Schlick Parameters
     public float p, hiVal;
 
     private Material tonemapperMat;
+    private RenderTexture grayscale;
     
-    void Start() {
+    void OnEnable() {
         tonemapperMat ??= new Material(tonemapperShader);
-        tonemapperMat.hideFlags = HideFlags.HideAndDontSave;
+        
+        if (grayscale == null) {
+            grayscale = new RenderTexture(1920, 1080, 0, RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear);
+            grayscale.useMipMap = true;
+            grayscale.Create();
+        }
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
-        tonemapperMat.SetFloat("_Lavg", Lavg);
+        Graphics.Blit(source, grayscale, tonemapperMat, 0);
+
         tonemapperMat.SetFloat("_Ldmax", Ldmax);
         tonemapperMat.SetFloat("_Cmax", Cmax);
         tonemapperMat.SetFloat("_P", p);
         tonemapperMat.SetFloat("_HiVal", hiVal);
+        tonemapperMat.SetTexture("_LuminanceTex", grayscale);
 
+
+        
         Graphics.Blit(source, destination, tonemapperMat, (int)toneMapper);
+    }
+
+    void OnDisable() {
+        grayscale.Release();
     }
 }
 
@@ -48,7 +62,6 @@ public class TonemapperEditor : Editor {
     void OnEnable() {
         tonemapperShader = serializedObject.FindProperty("tonemapperShader");
         toneMapper = serializedObject.FindProperty("toneMapper");
-        Lavg = serializedObject.FindProperty("Lavg");
         Ldmax = serializedObject.FindProperty("Ldmax");
         Cmax = serializedObject.FindProperty("Cmax");
         p = serializedObject.FindProperty("p");
@@ -60,11 +73,10 @@ public class TonemapperEditor : Editor {
         EditorGUILayout.PropertyField(tonemapperShader);
         EditorGUILayout.PropertyField(toneMapper);
 
-        Tonemapper.Tonemappers t = (Tonemapper.Tonemappers)toneMapper.enumValueIndex;
+        Tonemapper.Tonemappers t = (Tonemapper.Tonemappers)toneMapper.enumValueIndex + 1;
 
         switch(t) {
             case Tonemapper.Tonemappers.TumblinRushmeier:
-                EditorGUILayout.Slider(Lavg, 0.0f, 100.0f);
                 EditorGUILayout.Slider(Ldmax, 1.0f, 150.0f);
                 EditorGUILayout.Slider(Cmax, 1.0f, 100.0f);
                 break;

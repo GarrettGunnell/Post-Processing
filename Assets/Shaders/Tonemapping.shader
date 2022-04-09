@@ -29,8 +29,22 @@ Shader "Hidden/Tonemapping" {
                 return o;
             }
 
-            sampler2D _MainTex;
+            sampler2D _MainTex, _LuminanceTex;
         ENDCG
+
+        // Debug HDR
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float fp(v2f i) : SV_Target {
+                float4 col = tex2D(_MainTex, i.uv);
+
+                return luminance(col);
+            }
+            ENDCG
+        }
 
         // Debug HDR
         Pass {
@@ -67,14 +81,16 @@ Shader "Hidden/Tonemapping" {
             #pragma vertex vp
             #pragma fragment fp
 
-            float _Lavg, _Ldmax, _Cmax;
+            float _Ldmax, _Cmax;
 
             float4 fp(v2f i) : SV_Target {
                 float3 col = tex2D(_MainTex, i.uv).rgb;
 
                 float Lin = luminance(col);
 
-                float logLrw = log10(_Lavg) + 0.84;
+                float Lavg = tex2Dlod(_LuminanceTex, float4(i.uv.x, i.uv.y, 0, 10.0f)).r;
+
+                float logLrw = log10(Lavg) + 0.84;
                 float alphaRw = 0.4 * logLrw + 2.92;
                 float betaRw = -0.4 * logLrw * logLrw - 2.584 * logLrw + 2.0208;
                 float Lwd = _Ldmax / sqrt(_Cmax);
