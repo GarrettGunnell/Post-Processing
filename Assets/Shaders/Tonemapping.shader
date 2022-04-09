@@ -127,5 +127,30 @@ Shader "Hidden/Tonemapping" {
             }
             ENDCG
         }
+
+        // Ward
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float _Ldmax;
+
+            float4 fp(v2f i) : SV_Target {
+                float3 col = tex2D(_MainTex, i.uv).rgb;
+
+                float Lin = luminance(col);
+
+                float m = (1.219f + pow(_Ldmax / 2.0f, 0.4f)) / (1.219f + pow(Lin, 0.4f));
+                m = pow(m, 2.5f); 
+
+                float Lout = m / _Ldmax * Lin;
+
+                float3 Cout = col / Lin * Lout;
+
+                return float4(saturate(Cout), 1.0f);
+            }
+            ENDCG
+        }
     }
 }

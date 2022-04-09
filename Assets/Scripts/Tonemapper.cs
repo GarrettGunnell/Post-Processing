@@ -10,7 +10,8 @@ public class Tonemapper : MonoBehaviour {
         DebugHDR = 1,
         RGBClamp,
         TumblinRushmeier,
-        Schlick
+        Schlick,
+        Ward
     } public Tonemappers toneMapper;
 
     //Tumblin Rushmeier Parameters
@@ -56,7 +57,7 @@ public class Tonemapper : MonoBehaviour {
 public class TonemapperEditor : Editor {
     SerializedProperty tonemapperShader, 
                        toneMapper,
-                       Lavg, Ldmax, Cmax,
+                       Ldmax, Cmax,
                        p, hiVal;
 
     void OnEnable() {
@@ -77,12 +78,15 @@ public class TonemapperEditor : Editor {
 
         switch(t) {
             case Tonemapper.Tonemappers.TumblinRushmeier:
-                EditorGUILayout.Slider(Ldmax, 1.0f, 150.0f);
+                EditorGUILayout.Slider(Ldmax, 1.0f, 300.0f);
                 EditorGUILayout.Slider(Cmax, 1.0f, 100.0f);
                 break;
             case Tonemapper.Tonemappers.Schlick:
                 EditorGUILayout.Slider(p, 1.0f, 100.0f);
                 EditorGUILayout.Slider(hiVal, 1.0f, 150.0f);
+                break;
+            case Tonemapper.Tonemappers.Ward:
+                EditorGUILayout.Slider(Ldmax, 1.0f, 300.0f);
                 break;
         }
 
