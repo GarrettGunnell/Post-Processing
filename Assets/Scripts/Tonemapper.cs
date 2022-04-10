@@ -12,7 +12,8 @@ public class Tonemapper : MonoBehaviour {
         TumblinRushmeier,
         Schlick,
         Ward,
-        Reinhard
+        Reinhard,
+        ReinhardExtended
     } public Tonemappers toneMapper;
 
     //Tumblin Rushmeier Parameters
@@ -20,6 +21,9 @@ public class Tonemapper : MonoBehaviour {
 
     //Schlick Parameters
     public float p, hiVal;
+
+    //Reinhard Extended Parameters
+    public float Cwhite;
 
     private Material tonemapperMat;
     private RenderTexture grayscale;
@@ -41,10 +45,9 @@ public class Tonemapper : MonoBehaviour {
         tonemapperMat.SetFloat("_Cmax", Cmax);
         tonemapperMat.SetFloat("_P", p);
         tonemapperMat.SetFloat("_HiVal", hiVal);
+        tonemapperMat.SetFloat("_Cwhite", Cwhite);
         tonemapperMat.SetTexture("_LuminanceTex", grayscale);
 
-
-        
         Graphics.Blit(source, destination, tonemapperMat, (int)toneMapper);
     }
 
@@ -59,7 +62,8 @@ public class TonemapperEditor : Editor {
     SerializedProperty tonemapperShader, 
                        toneMapper,
                        Ldmax, Cmax,
-                       p, hiVal;
+                       p, hiVal,
+                       Cwhite;
 
     void OnEnable() {
         tonemapperShader = serializedObject.FindProperty("tonemapperShader");
@@ -68,6 +72,7 @@ public class TonemapperEditor : Editor {
         Cmax = serializedObject.FindProperty("Cmax");
         p = serializedObject.FindProperty("p");
         hiVal = serializedObject.FindProperty("hiVal");
+        Cwhite = serializedObject.FindProperty("Cwhite");
     }
 
     public override void OnInspectorGUI() {
@@ -88,6 +93,9 @@ public class TonemapperEditor : Editor {
                 break;
             case Tonemapper.Tonemappers.Ward:
                 EditorGUILayout.Slider(Ldmax, 1.0f, 300.0f);
+                break;
+            case Tonemapper.Tonemappers.ReinhardExtended:
+                EditorGUILayout.Slider(Cwhite, 1.0f, 60.0f);
                 break;
         }
 

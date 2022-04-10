@@ -159,8 +159,6 @@ Shader "Hidden/Tonemapping" {
             #pragma vertex vp
             #pragma fragment fp
 
-            float _Ldmax;
-
             float4 fp(v2f i) : SV_Target {
                 float3 col = tex2D(_MainTex, i.uv).rgb;
 
@@ -170,6 +168,28 @@ Shader "Hidden/Tonemapping" {
 
                 float3 Cout = col / Lin * Lout;
 
+                return float4(saturate(Cout), 1.0f);
+            }
+            ENDCG
+        }
+
+        // Reinhard Extended
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float _Cwhite;
+
+            float4 fp(v2f i) : SV_Target {
+                float3 col = tex2D(_MainTex, i.uv).rgb;
+
+                float Lin = luminance(col);
+
+                float Lout = (Lin * (1.0 + Lin / (_Cwhite * _Cwhite))) / (1.0 + Lin);
+
+                float3 Cout = col / Lin * Lout;
+                
                 return float4(saturate(Cout), 1.0f);
             }
             ENDCG
