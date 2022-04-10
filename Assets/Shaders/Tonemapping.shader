@@ -221,5 +221,37 @@ Shader "Hidden/Tonemapping" {
             }
             ENDCG
         }
+
+        // Uchimura
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float _P, _a, _m, _l, _c, _b;
+
+            float4 fp(v2f i) : SV_Target {
+                float3 col = tex2D(_MainTex, i.uv).rgb;
+
+                float l0 = ((_P - _m) * _l) / _a;
+                float S0 = _m + l0;
+                float S1 = _m + _a * l0;
+                float C2 = (_a * _P) / (_P - S1);
+                float CP = -C2 / _P;
+
+                float3 w0 = 1.0f - smoothstep(float3(0.0f, 0.0f, 0.0f), float3(_m, _m, _m), col);
+                float3 w2 = step(float3(_m + l0, _m + l0, _m + l0), col);
+                float3 w1 = float3(1.0f, 1.0f, 1.0f) - w0 - w2;
+
+                float3 T = _m * pow(col / _m, _c) + _b;
+                float3 L = _m + _a * (col - _m);
+                float3 S = _P - (_P - S1) * exp(CP * (col - S0));
+
+                float3 Cout = T * w0 + L * w1 + S * w2;
+                
+                return float4(saturate(Cout), 1.0f);
+            }
+            ENDCG
+        }
     }
 }

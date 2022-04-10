@@ -14,7 +14,8 @@ public class Tonemapper : MonoBehaviour {
         Ward,
         Reinhard,
         ReinhardExtended,
-        Hable
+        Hable,
+        Uchimura
     } public Tonemappers toneMapper;
 
     //Tumblin Rushmeier Parameters
@@ -28,6 +29,9 @@ public class Tonemapper : MonoBehaviour {
 
     //Hable Parameters
     public float shoulderStrength, linearStrength, linearAngle, toeStrength, toeNumerator, toeDenominator, linearWhitePoint;
+
+    //Uchimura Parameters
+    public float maxBrightness, contrast, linearStart, linearLength, blackTightnessShape, blackTightnessOffset;
 
     private Material tonemapperMat;
     private RenderTexture grayscale;
@@ -57,6 +61,13 @@ public class Tonemapper : MonoBehaviour {
         tonemapperMat.SetFloat("_E", toeNumerator);
         tonemapperMat.SetFloat("_F", toeDenominator);
         tonemapperMat.SetFloat("_W", linearWhitePoint);
+        tonemapperMat.SetFloat("_P", maxBrightness);
+        tonemapperMat.SetFloat("_a", contrast);
+        tonemapperMat.SetFloat("_m", linearStart);
+        tonemapperMat.SetFloat("_l", linearLength);
+        tonemapperMat.SetFloat("_c", blackTightnessShape);
+        tonemapperMat.SetFloat("_b", blackTightnessOffset);
+        
         tonemapperMat.SetTexture("_LuminanceTex", grayscale);
 
         Graphics.Blit(source, destination, tonemapperMat, (int)toneMapper);
@@ -75,7 +86,8 @@ public class TonemapperEditor : Editor {
                        Ldmax, Cmax,
                        p, hiVal,
                        Cwhite,
-                       shoulderStrength, linearStrength, linearAngle, toeStrength, toeNumerator, toeDenominator, linearWhitePoint;
+                       shoulderStrength, linearStrength, linearAngle, toeStrength, toeNumerator, toeDenominator, linearWhitePoint,
+                       maxBrightness, contrast, linearStart, linearLength, blackTightnessShape, blackTightnessOffset;
 
     void OnEnable() {
         tonemapperShader = serializedObject.FindProperty("tonemapperShader");
@@ -92,6 +104,12 @@ public class TonemapperEditor : Editor {
         toeNumerator = serializedObject.FindProperty("toeNumerator");
         toeDenominator = serializedObject.FindProperty("toeDenominator");
         linearWhitePoint = serializedObject.FindProperty("linearWhitePoint");
+        maxBrightness = serializedObject.FindProperty("maxBrightness");
+        contrast = serializedObject.FindProperty("contrast");
+        linearStart = serializedObject.FindProperty("linearStart");
+        linearLength = serializedObject.FindProperty("linearLength");
+        blackTightnessShape = serializedObject.FindProperty("blackTightnessShape");
+        blackTightnessOffset = serializedObject.FindProperty("blackTightnessOffset");
     }
 
     public override void OnInspectorGUI() {
@@ -124,6 +142,14 @@ public class TonemapperEditor : Editor {
                 EditorGUILayout.Slider(toeNumerator, 0.0f, 1.0f);
                 EditorGUILayout.Slider(toeDenominator, 0.0f, 1.0f);
                 EditorGUILayout.Slider(linearWhitePoint, 0.0f, 60.0f);
+                break;
+            case Tonemapper.Tonemappers.Uchimura:
+                EditorGUILayout.Slider(maxBrightness, 1.0f, 100.0f);
+                EditorGUILayout.Slider(contrast, 0.0f, 5.0f);
+                EditorGUILayout.Slider(linearStart, 0.0f, 1.0f);
+                EditorGUILayout.Slider(linearLength, 0.01f, 0.99f);
+                EditorGUILayout.Slider(blackTightnessShape, 1.0f, 3.0f);
+                EditorGUILayout.Slider(blackTightnessOffset, 0.0f, 1.0f);
                 break;
         }
 
