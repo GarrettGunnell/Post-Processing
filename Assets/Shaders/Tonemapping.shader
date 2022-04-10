@@ -253,5 +253,23 @@ Shader "Hidden/Tonemapping" {
             }
             ENDCG
         }
+
+        // Narkowicz ACES
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float4 fp(v2f i) : SV_Target {
+                float3 col = tex2D(_MainTex, i.uv).rgb;
+               
+
+                float3 Cout = (col*(2.51f*col+0.03f))/(col*(2.43f*col+0.59f)+0.14f);
+
+
+                return float4(saturate(Cout), 1.0f);
+            }
+            ENDCG
+        }
     }
 }
