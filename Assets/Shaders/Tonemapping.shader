@@ -152,5 +152,27 @@ Shader "Hidden/Tonemapping" {
             }
             ENDCG
         }
+
+        // Reinhard
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float _Ldmax;
+
+            float4 fp(v2f i) : SV_Target {
+                float3 col = tex2D(_MainTex, i.uv).rgb;
+
+                float Lin = luminance(col);
+
+                float Lout = Lin / (1.0f + Lin);
+
+                float3 Cout = col / Lin * Lout;
+
+                return float4(saturate(Cout), 1.0f);
+            }
+            ENDCG
+        }
     }
 }

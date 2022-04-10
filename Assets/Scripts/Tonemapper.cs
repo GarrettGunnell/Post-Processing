@@ -11,7 +11,8 @@ public class Tonemapper : MonoBehaviour {
         RGBClamp,
         TumblinRushmeier,
         Schlick,
-        Ward
+        Ward,
+        Reinhard
     } public Tonemappers toneMapper;
 
     //Tumblin Rushmeier Parameters
