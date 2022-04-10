@@ -13,7 +13,8 @@ public class Tonemapper : MonoBehaviour {
         Schlick,
         Ward,
         Reinhard,
-        ReinhardExtended
+        ReinhardExtended,
+        Hable
     } public Tonemappers toneMapper;
 
     //Tumblin Rushmeier Parameters
@@ -24,6 +25,9 @@ public class Tonemapper : MonoBehaviour {
 
     //Reinhard Extended Parameters
     public float Cwhite;
+
+    //Hable Parameters
+    public float shoulderStrength, linearStrength, linearAngle, toeStrength, toeNumerator, toeDenominator, linearWhitePoint;
 
     private Material tonemapperMat;
     private RenderTexture grayscale;
@@ -46,6 +50,13 @@ public class Tonemapper : MonoBehaviour {
         tonemapperMat.SetFloat("_P", p);
         tonemapperMat.SetFloat("_HiVal", hiVal);
         tonemapperMat.SetFloat("_Cwhite", Cwhite);
+        tonemapperMat.SetFloat("_A", shoulderStrength);
+        tonemapperMat.SetFloat("_B", linearStrength);
+        tonemapperMat.SetFloat("_C", linearAngle);
+        tonemapperMat.SetFloat("_D", toeStrength);
+        tonemapperMat.SetFloat("_E", toeNumerator);
+        tonemapperMat.SetFloat("_F", toeDenominator);
+        tonemapperMat.SetFloat("_W", linearWhitePoint);
         tonemapperMat.SetTexture("_LuminanceTex", grayscale);
 
         Graphics.Blit(source, destination, tonemapperMat, (int)toneMapper);
@@ -63,7 +74,8 @@ public class TonemapperEditor : Editor {
                        toneMapper,
                        Ldmax, Cmax,
                        p, hiVal,
-                       Cwhite;
+                       Cwhite,
+                       shoulderStrength, linearStrength, linearAngle, toeStrength, toeNumerator, toeDenominator, linearWhitePoint;
 
     void OnEnable() {
         tonemapperShader = serializedObject.FindProperty("tonemapperShader");
@@ -73,6 +85,13 @@ public class TonemapperEditor : Editor {
         p = serializedObject.FindProperty("p");
         hiVal = serializedObject.FindProperty("hiVal");
         Cwhite = serializedObject.FindProperty("Cwhite");
+        shoulderStrength = serializedObject.FindProperty("shoulderStrength");
+        linearStrength = serializedObject.FindProperty("linearStrength");
+        linearAngle = serializedObject.FindProperty("linearAngle");
+        toeStrength = serializedObject.FindProperty("toeStrength");
+        toeNumerator = serializedObject.FindProperty("toeNumerator");
+        toeDenominator = serializedObject.FindProperty("toeDenominator");
+        linearWhitePoint = serializedObject.FindProperty("linearWhitePoint");
     }
 
     public override void OnInspectorGUI() {
@@ -96,6 +115,15 @@ public class TonemapperEditor : Editor {
                 break;
             case Tonemapper.Tonemappers.ReinhardExtended:
                 EditorGUILayout.Slider(Cwhite, 1.0f, 60.0f);
+                break;
+            case Tonemapper.Tonemappers.Hable:
+                EditorGUILayout.Slider(shoulderStrength, 0.0f, 1.0f);
+                EditorGUILayout.Slider(linearStrength, 0.0f, 1.0f);
+                EditorGUILayout.Slider(linearAngle, 0.0f, 1.0f);
+                EditorGUILayout.Slider(toeStrength, 0.0f, 1.0f);
+                EditorGUILayout.Slider(toeNumerator, 0.0f, 1.0f);
+                EditorGUILayout.Slider(toeDenominator, 0.0f, 1.0f);
+                EditorGUILayout.Slider(linearWhitePoint, 0.0f, 60.0f);
                 break;
         }
 

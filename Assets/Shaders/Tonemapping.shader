@@ -194,5 +194,32 @@ Shader "Hidden/Tonemapping" {
             }
             ENDCG
         }
+
+        // Hable
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float _A, _B, _C, _D, _E, _F, _W;
+
+            float3 Uncharted2Tonemap(float3 x) {
+                return ((x*(_A*x+_C*_B)+_D*_E)/(x*(_A*x+_B)+_D*_F))-_E/_F;
+            }
+
+            float4 fp(v2f i) : SV_Target {
+                float3 col = tex2D(_MainTex, i.uv).rgb;
+
+                float ExposureBias = 2.0f;
+                float3 curr = ExposureBias * Uncharted2Tonemap(col);
+
+                float3 whiteScale = 1.0f / Uncharted2Tonemap(float3(_W, _W, _W));
+
+                float3 Cout = curr * whiteScale;
+                
+                return float4(saturate(Cout), 1.0f);
+            }
+            ENDCG
+        }
     }
 }
