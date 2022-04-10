@@ -16,7 +16,8 @@ public class Tonemapper : MonoBehaviour {
         ReinhardExtended,
         Hable,
         Uchimura,
-        NarkowiczACES
+        NarkowiczACES,
+        HillACES
     } public Tonemappers toneMapper;
 
     //Tumblin Rushmeier Parameters
