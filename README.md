@@ -81,3 +81,8 @@ by Garrett Gunnell
 ## Hill ACES
 
 ![hill](./examples/13_hillACES.png)
+
+# References
+
+https://catlikecoding.com/unity/tutorials/custom-srp/color-grading/
+https://github.com/tizian/tonemapper
