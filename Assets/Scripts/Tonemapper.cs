@@ -63,7 +63,7 @@ public class Tonemapper : MonoBehaviour {
         tonemapperMat.SetFloat("_E", toeNumerator);
         tonemapperMat.SetFloat("_F", toeDenominator);
         tonemapperMat.SetFloat("_W", linearWhitePoint);
-        tonemapperMat.SetFloat("_P", maxBrightness);
+        tonemapperMat.SetFloat("_M", maxBrightness);
         tonemapperMat.SetFloat("_a", contrast);
         tonemapperMat.SetFloat("_m", linearStart);
         tonemapperMat.SetFloat("_l", linearLength);
