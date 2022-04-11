@@ -84,5 +84,5 @@ by Garrett Gunnell
 
 # References
 
-https://catlikecoding.com/unity/tutorials/custom-srp/color-grading/
+https://catlikecoding.com/unity/tutorials/custom-srp/color-grading/ </br>
 https://github.com/tizian/tonemapper
