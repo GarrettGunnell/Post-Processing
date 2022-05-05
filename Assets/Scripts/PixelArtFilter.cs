@@ -7,7 +7,7 @@ public class PixelArtFilter : MonoBehaviour {
 
     [Range(0, 8)]
     public int downSamples = 0;
-    
+
     private Material pixelArtMat;
     
     void Start() {
@@ -16,8 +16,8 @@ public class PixelArtFilter : MonoBehaviour {
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
-        int width = source.width / 2;
-        int height = source.height / 2;
+        int width = source.width;
+        int height = source.height;
 
         RenderTexture[] textures = new RenderTexture[8];
 
