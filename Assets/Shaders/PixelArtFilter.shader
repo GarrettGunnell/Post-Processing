@@ -29,10 +29,11 @@ Shader "Hidden/PixelArtFilter" {
                 return o;
             }
 
-            sampler2D _MainTex;
+            Texture2D _MainTex;
+            SamplerState point_clamp_sampler;
 
             fixed4 fp(v2f i) : SV_Target {
-                float4 col = tex2D(_MainTex, i.uv);
+                float4 col = _MainTex.Sample(point_clamp_sampler, i.uv);
 
                 return col;
             }
