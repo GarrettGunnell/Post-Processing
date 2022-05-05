@@ -31,6 +31,8 @@ Shader "Hidden/Dither" {
 
             sampler2D _MainTex;
             float4 _MainTex_TexelSize;
+            float _Spread;
+            int _ColorCount;
 
             static const int bayer2[2 * 2] = {
                 0, 2,
@@ -58,13 +60,9 @@ Shader "Hidden/Dither" {
                 int x = i.uv.x * _MainTex_TexelSize.z;
                 int y = i.uv.y * _MainTex_TexelSize.w;
 
-                float4 output = col + 0.75f * GetBayer(x, y, 8);
+                float4 output = col + _Spread * GetBayer(x, y, 8);
 
-                int colorCount = 4;
-
-                output.r = floor((colorCount - 1.0f) * output.r + 0.5) / (colorCount - 1.0f);
-                output.g = floor((colorCount - 1.0f) * output.g + 0.5) / (colorCount - 1.0f);
-                output.b = floor((colorCount - 1.0f) * output.b + 0.5) / (colorCount - 1.0f);
+                output = floor((_ColorCount - 1.0f) * output + 0.5) / (_ColorCount - 1.0f);
 
                 return output;
             }
