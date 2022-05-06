@@ -5,11 +5,7 @@ Shader "Hidden/Dither" {
 
     SubShader {
 
-        Pass {
-            CGPROGRAM
-            #pragma vertex vp
-            #pragma fragment fp
-
+        CGINCLUDE
             #include "UnityCG.cginc"
 
             struct VertexData {
@@ -22,15 +18,23 @@ Shader "Hidden/Dither" {
                 float4 vertex : SV_POSITION;
             };
 
+            Texture2D _MainTex;
+            SamplerState point_clamp_sampler;
+            float4 _MainTex_TexelSize;
+
             v2f vp(VertexData v) {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
                 return o;
             }
+        ENDCG
 
-            sampler2D _MainTex;
-            float4 _MainTex_TexelSize;
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
             float _Spread;
             int _ColorCount, _BayerLevel;
 
@@ -70,7 +74,7 @@ Shader "Hidden/Dither" {
             }
 
             fixed4 fp(v2f i) : SV_Target {
-                float4 col = tex2D(_MainTex, i.uv);
+                float4 col = _MainTex.Sample(point_clamp_sampler, i.uv);
 
                 int x = i.uv.x * _MainTex_TexelSize.z;
                 int y = i.uv.y * _MainTex_TexelSize.w;
@@ -85,6 +89,17 @@ Shader "Hidden/Dither" {
                 output = floor((_ColorCount - 1.0f) * output + 0.5) / (_ColorCount - 1.0f);
 
                 return output;
+            }
+            ENDCG
+        }
+
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            fixed4 fp(v2f i) : SV_Target {
+                return _MainTex.Sample(point_clamp_sampler, i.uv);
             }
             ENDCG
         }
