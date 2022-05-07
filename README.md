@@ -1,11 +1,12 @@
 # Post Processing Pipeline For Unity
 
-by Garrett Gunnell
+This code accompanies my [series on Post Processing](https://www.youtube.com/playlist?list=PLUKV95Q13e_Un6ADYZ9NyWJ3W1R2cbCYv) on YouTube.
 
 ## Features
 
 * Fog
 * Bloom
+* Depth Based Edge Detection
 * Color Correction
 * * Exposure
 * * White Balancing
@@ -13,6 +14,7 @@ by Garrett Gunnell
 * * Brightness
 * * Color Filtering
 * * Saturation
+* Sharpness
 * Tonemapping
 * * RGB Clamp
 * * Tumblin Rushmeier
@@ -24,6 +26,10 @@ by Garrett Gunnell
 * * Uchimura
 * * Narkowicz ACES
 * * Hill ACES
+* Pixel Art Effects
+* * Downscampling
+* * Dithering
+* * Color Palette Swapping
 * Gamma Corrector
 
 # Examples
@@ -82,7 +88,32 @@ by Garrett Gunnell
 
 ![hill](./examples/13_hillACES.png)
 
+# Pixel Art
+
+Open images in their full resolution for optimal viewing.
+Sheik model is exported from melee.
+
+![sheik](/examples/default_sheik.png)
+
+## 2x Downsample
+
+![downsampled_sheik](/examples/downsampled_sheik.png)
+
+## 1x Downsample + Dither
+
+![dithered_sheik](/examples/dithered_sheik.gif)
+
+## Color Palette Swapping
+
+Original Colors:
+![dithered_grass](/examples/dithered_grass.gif)
+
+Palette Swapped (8-bit):
+![color_swapped](/examples/palette_swap_grass.gif)
+
+
 # References
 
 https://catlikecoding.com/unity/tutorials/custom-srp/color-grading/ </br>
-https://github.com/tizian/tonemapper
+https://github.com/tizian/tonemapper </br>
+https://en.wikipedia.org/wiki/Ordered_dithering

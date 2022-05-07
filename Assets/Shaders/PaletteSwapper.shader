@@ -34,6 +34,7 @@ Shader "Hidden/PaletteSwapper" {
             int _Invert;
 
             fixed4 fp(v2f i) : SV_Target {
+                /* Assumes _MainTex is grayscale and palette compressed */
                 float2 uv = float2(tex2D(_MainTex, i.uv).r, 0.5f);
                 uv.x = _Invert == 1 ? 1 - uv.x : uv.x;
 
