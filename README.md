@@ -105,7 +105,7 @@ Sheik model is exported from melee.
 
 ## Color Palette Swapping
 
-Original Colors:
+Original Colors: </br>
 ![dithered_grass](/examples/dithered_grass.gif)
 
 Palette Swapped (8-bit):
