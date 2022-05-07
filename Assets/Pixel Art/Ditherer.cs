@@ -8,7 +8,7 @@ public class Ditherer : MonoBehaviour {
     [Range(0.0f, 1.0f)]
     public float spread = 0.5f;
 
-    [Range(2, 8)]
+    [Range(2, 16)]
     public int colorCount = 2;
     [Range(0, 2)]
     public int bayerLevel = 0;
