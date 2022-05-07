@@ -4,18 +4,18 @@ This code accompanies my [series on Post Processing](https://www.youtube.com/pla
 
 ## Features
 
-* Fog
-* Bloom
-* Depth Based Edge Detection
-* Color Correction
+* **Fog**
+* **Bloom**
+* **Depth Based Edge Detection**
+* **Color Correction**
 * * Exposure
 * * White Balancing
 * * Contrast
 * * Brightness
 * * Color Filtering
 * * Saturation
-* Sharpness
-* Tonemapping
+* **Sharpness**
+* **Tonemapping**
 * * RGB Clamp
 * * Tumblin Rushmeier
 * * Schlick
@@ -26,11 +26,11 @@ This code accompanies my [series on Post Processing](https://www.youtube.com/pla
 * * Uchimura
 * * Narkowicz ACES
 * * Hill ACES
-* Pixel Art Effects
+* **Pixel Art Effects**
 * * Downscampling
 * * Dithering
 * * Color Palette Swapping
-* Gamma Corrector
+* **Gamma Corrector**
 
 # Examples
 
