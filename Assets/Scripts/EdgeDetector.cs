@@ -6,6 +6,8 @@ using UnityEngine;
 public class EdgeDetector : MonoBehaviour {
     public Shader edgeShader;
     
+    public Color borderColor;
+
     private Material edgeMat;
 
     void Start() {
@@ -17,6 +19,7 @@ public class EdgeDetector : MonoBehaviour {
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
+        edgeMat.SetColor("_BorderColor", borderColor);
         Graphics.Blit(source, destination, edgeMat);
     }
 }
