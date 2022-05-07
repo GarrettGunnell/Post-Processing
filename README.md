@@ -27,7 +27,7 @@ This code accompanies my [series on Post Processing](https://www.youtube.com/pla
 * * Narkowicz ACES
 * * Hill ACES
 * **Pixel Art Effects**
-* * Downscampling
+* * Downsampling
 * * Dithering
 * * Color Palette Swapping
 * **Gamma Corrector**
