@@ -36,7 +36,7 @@ Shader "Hidden/Dither" {
             #pragma fragment fp
 
             float _Spread;
-            int _ColorCount, _BayerLevel;
+            int _RedColorCount, _GreenColorCount, _BlueColorCount , _BayerLevel;
 
             static const int bayer2[2 * 2] = {
                 0, 2,
@@ -86,7 +86,9 @@ Shader "Hidden/Dither" {
 
                 float4 output = col + _Spread * bayerValues[_BayerLevel];
 
-                output = floor((_ColorCount - 1.0f) * output + 0.5) / (_ColorCount - 1.0f);
+                output.r = floor((_RedColorCount - 1.0f) * output.r + 0.5) / (_RedColorCount - 1.0f);
+                output.g = floor((_GreenColorCount - 1.0f) * output.g + 0.5) / (_GreenColorCount - 1.0f);
+                output.b = floor((_BlueColorCount - 1.0f) * output.b + 0.5) / (_BlueColorCount - 1.0f);
 
                 return output;
             }

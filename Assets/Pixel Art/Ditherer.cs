@@ -9,7 +9,12 @@ public class Ditherer : MonoBehaviour {
     public float spread = 0.5f;
 
     [Range(2, 16)]
-    public int colorCount = 2;
+    public int redColorCount = 2;
+    [Range(2, 16)]
+    public int greenColorCount = 2;
+    [Range(2, 16)]
+    public int blueColorCount = 2;
+
     [Range(0, 2)]
     public int bayerLevel = 0;
 
@@ -27,7 +32,9 @@ public class Ditherer : MonoBehaviour {
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
         ditherMat.SetFloat("_Spread", spread);
-        ditherMat.SetInt("_ColorCount", colorCount);
+        ditherMat.SetInt("_RedColorCount", redColorCount);
+        ditherMat.SetInt("_GreenColorCount", greenColorCount);
+        ditherMat.SetInt("_BlueColorCount", blueColorCount);
         ditherMat.SetInt("_BayerLevel", bayerLevel);
 
         int width = source.width;
