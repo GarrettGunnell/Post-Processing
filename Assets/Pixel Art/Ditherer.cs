@@ -16,6 +16,8 @@ public class Ditherer : MonoBehaviour {
     [Range(0, 8)]
     public int downSamples = 0;
 
+    public bool pointFilterDown = false;
+
     private Material ditherMat;
     
     void Start() {
@@ -43,7 +45,12 @@ public class Ditherer : MonoBehaviour {
                 break;
 
             RenderTexture currentDestination = textures[i] = RenderTexture.GetTemporary(width, height, 0, source.format);
-            Graphics.Blit(currentSource, currentDestination);
+
+            if (pointFilterDown)
+                Graphics.Blit(currentSource, currentDestination, ditherMat, 1);
+            else
+                Graphics.Blit(currentSource, currentDestination);
+
             currentSource = currentDestination;
         }
 
