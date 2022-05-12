@@ -93,27 +93,31 @@ This code accompanies my [series on Post Processing](https://www.youtube.com/pla
 Open images in their full resolution for optimal viewing.
 Sheik model is exported from melee.
 
-![sheik](/examples/default_sheik.png)
+![sheik](./examples/default_sheik.png)
 
 ## 2x Downsample
 
-![downsampled_sheik](/examples/downsampled_sheik.png)
+![downsampled_sheik](./examples/downsampled_sheik.png)
 
 ## 1x Downsample + Dither
 
-![dithered_sheik](/examples/dithered_sheik.gif)
+![dithered_sheik](./examples/dithered_sheik.gif)
 
 ## 1x Downsample + Dither + Sharpness
 
-![sharp_dither](/examples/sharp_dither.gif)
+![sharp_dither](./examples/sharp_dither.gif)
+
+Still Frame:
+
+![sharp_dither_still](./examples/sharp_dither_still.png)
 
 ## Color Palette Swapping
 
 Original Colors: </br>
-![dithered_grass](/examples/dithered_grass.gif)
+![dithered_grass](./examples/dithered_grass.gif)
 
 Palette Swapped (8-bit):
-![color_swapped](/examples/palette_swap_grass.gif)
+![color_swapped](./examples/palette_swap_grass.gif)
 
 
 # References
