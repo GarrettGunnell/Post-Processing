@@ -103,6 +103,10 @@ Sheik model is exported from melee.
 
 ![dithered_sheik](/examples/dithered_sheik.gif)
 
+## 1x Downsample + Dither + Sharpness
+
+![sharp_dither](/examples/sharp_dither.gif)
+
 ## Color Palette Swapping
 
 Original Colors: </br>
