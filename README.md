@@ -38,6 +38,7 @@ These effects are modular only for ease of experimentation and finding what look
 * * Dithering
 * * Color Palette Swapping
 * **Gamma Corrector**
+* **[CRT Shader](https://github.com/GarrettGunnell/CRT-Shader)** (not included with this repo)
 
 # Examples
 
