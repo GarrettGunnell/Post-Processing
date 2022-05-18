@@ -1,15 +1,11 @@
-Shader "Hidden/ColorBlindness" {
+Shader "Hidden/ColorBlindess" {
     Properties {
         _MainTex ("Texture", 2D) = "white" {}
     }
 
     SubShader {
 
-        Pass {
-            CGPROGRAM
-            #pragma vertex vp
-            #pragma fragment fp
-
+        CGINCLUDE
             #include "UnityCG.cginc"
 
             struct VertexData {
@@ -30,11 +26,18 @@ Shader "Hidden/ColorBlindness" {
             }
 
             sampler2D _MainTex;
+        ENDCG
 
-            fixed4 fp(v2f i) : SV_Target {
+        // Normal
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float4 fp(v2f i) : SV_Target {
                 float4 col = tex2D(_MainTex, i.uv);
 
-                return 1 - col;
+                return col;
             }
             ENDCG
         }

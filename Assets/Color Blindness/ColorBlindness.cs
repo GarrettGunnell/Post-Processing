@@ -5,6 +5,18 @@ using UnityEngine;
 public class ColorBlindness : MonoBehaviour {
     public Shader colorBlindnessShader;
 
+    public enum BlindTypes {
+        Normal = 0,
+        Protanopia,
+        Protanomaly,
+        Deuteranopia,
+        Deuteranomaly,
+        Tritanopia,
+        Tritanomaly,
+        Achromatopsia,
+        Achromatomaly
+    } public BlindTypes blindType;
+
     private Material colorBlindMat;
     
     void Start() {
@@ -13,6 +25,6 @@ public class ColorBlindness : MonoBehaviour {
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
-        Graphics.Blit(source, destination, colorBlindMat);
+        Graphics.Blit(source, destination, colorBlindMat, (int)blindType);
     }
 }
