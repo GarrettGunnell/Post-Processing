@@ -26,6 +26,7 @@ Shader "Hidden/ColorBlindess" {
             }
 
             sampler2D _MainTex;
+            float _Severity;
         ENDCG
 
         // Normal
@@ -36,6 +37,31 @@ Shader "Hidden/ColorBlindess" {
 
             float4 fp(v2f i) : SV_Target {
                 float4 col = tex2D(_MainTex, i.uv);
+
+                return col;
+            }
+            ENDCG
+        }
+
+        // Protanopia
+        Pass {
+            CGPROGRAM
+
+            #pragma vertex vp
+            #pragma fragment fp
+
+            #include "Protanomaly.cginc"
+
+            float4 fp(v2f i) : SV_Target {
+                float4 col = tex2D(_MainTex, i.uv);
+
+                int p1 = min(10.0f, floor(_Severity * 10.0f));
+                int p2 = min(10.0f, floor((_Severity + 0.1f) * 10.0f));
+                float weight = frac(_Severity * 10.0f);
+
+                float3x3 blindness = lerp(protanomalySeverities[p1], protanomalySeverities[p2], weight);
+
+                col.rgb = mul(col.rgb, blindness);
 
                 return col;
             }
