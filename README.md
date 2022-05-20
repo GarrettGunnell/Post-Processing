@@ -10,20 +10,20 @@ These effects are modular only for ease of experimentation and finding what look
 
 ## Features
 
--  **[anchor](#fog)**
+* **Fog**
 * * Distance
-* **[Bloom](#bloom)**
+* **Bloom**
 * **Depth Based Edge Detection**
-* **[Color Correction](#color-correction-rgb-clamped)**
+* **Color Correction**
 * * Exposure
 * * White Balancing
 * * Contrast
 * * Brightness
 * * Color Filtering
 * * Saturation
-* **[Hue Shifting](#hue-shifting)**
-* **[Sharpness](#sharpness)**
-* **[Tonemapping](#tonemapping)**
+* **Hue Shifting**
+* **Sharpness**
+* **Tonemapping**
 * * RGB Clamp
 * * Tumblin Rushmeier
 * * Schlick
@@ -34,13 +34,13 @@ These effects are modular only for ease of experimentation and finding what look
 * * Uchimura
 * * Narkowicz ACES
 * * Hill ACES
-* **[Pixel Art Effects](#pixel-art)**
+* **Pixel Art Effects**
 * * Downsampling
 * * Dithering
 * * Color Palette Swapping
-* **[Gamma Corrector]**
+* **Gamma Corrector**
 * **[CRT Shader](https://github.com/GarrettGunnell/CRT-Shader)** (not included with this repo)
-* **[Color Blindness](#color-blindness-simulation)**
+* **Color Blindness**
 * * Protanopia/Protanomaly
 * * Deuteranopia/Deuteranomaly
 * * Tritanopia/Tritanomaly
