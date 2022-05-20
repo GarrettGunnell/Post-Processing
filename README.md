@@ -21,6 +21,7 @@ These effects are modular only for ease of experimentation and finding what look
 * * Brightness
 * * Color Filtering
 * * Saturation
+* **Hue Shifting**
 * **Sharpness**
 * **Tonemapping**
 * * RGB Clamp
@@ -39,6 +40,10 @@ These effects are modular only for ease of experimentation and finding what look
 * * Color Palette Swapping
 * **Gamma Corrector**
 * **[CRT Shader](https://github.com/GarrettGunnell/CRT-Shader)** (not included with this repo)
+* **Color Blindness**
+* * Protanopia/Protanomaly
+* * Deuteranopia/Deuteranomaly
+* * Tritanopia/Tritanomaly
 
 # Examples
 
@@ -57,6 +62,14 @@ These effects are modular only for ease of experimentation and finding what look
 ## Color Correction (RGB Clamped)
 
 ![colorcorrect](./examples/4_colorcorrection.png)
+
+## Hue Shifting
+
+![hueshift](./examples/hue_shift.png)
+
+## Sharpness
+
+![sharpness](./examples/sharpness.png)
 
 # Tonemapping
 
