@@ -14,6 +14,8 @@ public class ColorBlindness : MonoBehaviour {
     [Range(0.0f, 1.0f)]
     public float severity = 0.0f;
 
+    public bool difference = false;
+
     private Material colorBlindMat;
     
     void Start() {
@@ -23,6 +25,7 @@ public class ColorBlindness : MonoBehaviour {
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
         colorBlindMat.SetFloat("_Severity", severity);
+        colorBlindMat.SetInt("_Difference", difference ? 1 : 0);
 
         Graphics.Blit(source, destination, colorBlindMat, (int)blindType);
     }

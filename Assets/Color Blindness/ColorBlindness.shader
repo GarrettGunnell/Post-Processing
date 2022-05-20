@@ -25,8 +25,13 @@ Shader "Hidden/ColorBlindess" {
                 return o;
             }
 
+            float luminance(float3 color) {
+                return dot(color, float3(0.299f, 0.587f, 0.114f));
+            }
+
             sampler2D _MainTex;
             float _Severity;
+            int _Difference;
         ENDCG
 
         // Normal
@@ -61,9 +66,15 @@ Shader "Hidden/ColorBlindess" {
 
                 float3x3 blindness = lerp(protanomalySeverities[p1], protanomalySeverities[p2], weight);
 
-                col.rgb = mul(col.rgb, blindness);
+                float3 cb = mul(col.rgb, blindness);
 
-                return col;
+                float3 difference = abs(col.rgb - cb);
+
+                if (_Difference == 1) {
+                    cb = lerp(luminance(col), float3(1, 0, 0), saturate(dot(difference, 1) / 3.0f));
+                }
+
+                return float4(saturate(cb), 1.0f);
             }
             ENDCG
         }
@@ -86,9 +97,15 @@ Shader "Hidden/ColorBlindess" {
 
                 float3x3 blindness = lerp(deuteranomalySeverities[p1], deuteranomalySeverities[p2], weight);
 
-                col.rgb = mul(col.rgb, blindness);
+                float3 cb = mul(col.rgb, blindness);
 
-                return col;
+                float3 difference = abs(col.rgb - cb);
+
+                if (_Difference == 1) {
+                    cb = lerp(luminance(col), float3(1, 0, 0), saturate(dot(difference, 1) / 3.0f));
+                }
+
+                return float4(saturate(cb), 1.0f);
             }
             ENDCG
         }
