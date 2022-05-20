@@ -10,7 +10,7 @@ These effects are modular only for ease of experimentation and finding what look
 
 ## Features
 
-* **[anchor](#fog)**
+-  **[anchor](#fog)**
 * * Distance
 * **[Bloom](#bloom)**
 * **Depth Based Edge Detection**
