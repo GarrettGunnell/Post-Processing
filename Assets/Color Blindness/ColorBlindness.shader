@@ -66,7 +66,7 @@ Shader "Hidden/ColorBlindess" {
 
                 float3x3 blindness = lerp(protanomalySeverities[p1], protanomalySeverities[p2], weight);
 
-                float3 cb = mul(col.rgb, blindness);
+                float3 cb = mul(blindness, col.rgb);
 
                 float3 difference = abs(col.rgb - cb);
 
@@ -97,7 +97,38 @@ Shader "Hidden/ColorBlindess" {
 
                 float3x3 blindness = lerp(deuteranomalySeverities[p1], deuteranomalySeverities[p2], weight);
 
-                float3 cb = mul(col.rgb, blindness);
+                float3 cb = mul(blindness, col.rgb);
+
+                float3 difference = abs(col.rgb - cb);
+
+                if (_Difference == 1) {
+                    cb = lerp(luminance(col), float3(1, 0, 0), saturate(dot(difference, 1) / 3.0f));
+                }
+
+                return float4(saturate(cb), 1.0f);
+            }
+            ENDCG
+        }
+
+        // Tritanopia
+        Pass {
+            CGPROGRAM
+
+            #pragma vertex vp
+            #pragma fragment fp
+
+            #include "Tritanomaly.cginc"
+
+            float4 fp(v2f i) : SV_Target {
+                float4 col = tex2D(_MainTex, i.uv);
+
+                int p1 = min(10.0f, floor(_Severity * 10.0f));
+                int p2 = min(10.0f, floor((_Severity + 0.1f) * 10.0f));
+                float weight = frac(_Severity * 10.0f);
+
+                float3x3 blindness = lerp(tritanomalySeverities[p1], tritanomalySeverities[p2], weight);
+
+                float3 cb = mul(blindness, col.rgb);
 
                 float3 difference = abs(col.rgb - cb);
 
