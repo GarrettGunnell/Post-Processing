@@ -8,8 +8,7 @@ public class ColorBlindness : MonoBehaviour {
     public enum BlindTypes {
         Normal = 0,
         Protanomaly,
-        Deuteranomaly,
-        Tritanomaly
+        Deuteranomaly
     } public BlindTypes blindType;
 
     [Range(0.0f, 1.0f)]
