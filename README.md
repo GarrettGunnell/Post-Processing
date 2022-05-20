@@ -10,20 +10,20 @@ These effects are modular only for ease of experimentation and finding what look
 
 ## Features
 
-* **Fog**
+* **[anchor](#fog)**
 * * Distance
-* **Bloom**
+* **[Bloom](#bloom)**
 * **Depth Based Edge Detection**
-* **Color Correction**
+* **[Color Correction](#color-correction-rgb-clamped)**
 * * Exposure
 * * White Balancing
 * * Contrast
 * * Brightness
 * * Color Filtering
 * * Saturation
-* **Hue Shifting**
-* **Sharpness**
-* **Tonemapping**
+* **[Hue Shifting](#hue-shifting)**
+* **[Sharpness](#sharpness)**
+* **[Tonemapping](#tonemapping)**
 * * RGB Clamp
 * * Tumblin Rushmeier
 * * Schlick
@@ -34,13 +34,13 @@ These effects are modular only for ease of experimentation and finding what look
 * * Uchimura
 * * Narkowicz ACES
 * * Hill ACES
-* **Pixel Art Effects**
+* **[Pixel Art Effects](#pixel-art)**
 * * Downsampling
 * * Dithering
 * * Color Palette Swapping
-* **Gamma Corrector**
+* **[Gamma Corrector]**
 * **[CRT Shader](https://github.com/GarrettGunnell/CRT-Shader)** (not included with this repo)
-* **Color Blindness**
+* **[Color Blindness](#color-blindness-simulation)**
 * * Protanopia/Protanomaly
 * * Deuteranopia/Deuteranomaly
 * * Tritanopia/Tritanomaly
@@ -156,9 +156,11 @@ Palette Swapped (8-bit): </br>
 These shaders are useful for testing the usability of your game from the perspective of those with color blindness.
 
 Consider the case below, with the default red and green health bars it is hard for someone who suffers from deuteranopia (the most common form of color blindness) to tell the difference between them at a glance. </br>
+
 ![league1](./examples/league1.png)
 
 Riot Games is aware of this issue and provides a color blind mode in the options which changes ally health bars to a bright yellow, making the value difference between allies and enemies quite obvious. </br>
+
 ![league2](./examples/league2.png)
 
 # References
