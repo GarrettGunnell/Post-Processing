@@ -137,12 +137,33 @@ Still Frame:
 Original Colors: </br>
 ![dithered_grass](./examples/dithered_grass.gif)
 
-Palette Swapped (8-bit):
+Palette Swapped (8-bit): </br>
 ![color_swapped](./examples/palette_swap_grass.gif)
 
+# Color Blindness Simulation
+
+## Protanopia (Absent L-cone)
+![protanopia](./examples/protanopia.png)
+
+## Deuteranopia (Absent M-cone)
+![deuteranopia](./examples/deuteranopia.png)
+
+## Tritanopia (Absent S-cone)
+![tritanopia](./examples/tritanopia.png)
+
+### More Details
+
+These shaders are useful for testing the usability of your game from the perspective of those with color blindness.
+
+Consider the case below, with the default red and green health bars it is hard for someone who suffers from deuteranopia (the most common form of color blindness) to tell the difference between them at a glance. </br>
+![league1](./examples/league1.png)
+
+Riot Games is aware of this issue and provides a color blind mode in the options which changes ally health bars to a bright yellow, making the value difference between allies and enemies quite obvious. </br>
+![league2](./examples/league2.png)
 
 # References
 
 https://catlikecoding.com/unity/tutorials/custom-srp/color-grading/ </br>
 https://github.com/tizian/tonemapper </br>
-https://en.wikipedia.org/wiki/Ordered_dithering
+https://en.wikipedia.org/wiki/Ordered_dithering </br>
+https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html
