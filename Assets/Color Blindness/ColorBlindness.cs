@@ -6,8 +6,7 @@ public class ColorBlindness : MonoBehaviour {
     public Shader colorBlindnessShader;
 
     public enum BlindTypes {
-        Normal = 0,
-        Protanomaly,
+        Protanomaly = 0,
         Deuteranomaly,
         Tritanomaly
     } public BlindTypes blindType;

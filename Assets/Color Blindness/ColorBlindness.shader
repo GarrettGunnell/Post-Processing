@@ -34,20 +34,6 @@ Shader "Hidden/ColorBlindess" {
             int _Difference;
         ENDCG
 
-        // Normal
-        Pass {
-            CGPROGRAM
-            #pragma vertex vp
-            #pragma fragment fp
-
-            float4 fp(v2f i) : SV_Target {
-                float4 col = tex2D(_MainTex, i.uv);
-
-                return col;
-            }
-            ENDCG
-        }
-
         // Protanopia
         Pass {
             CGPROGRAM
@@ -71,7 +57,7 @@ Shader "Hidden/ColorBlindess" {
                 float3 difference = abs(col.rgb - cb);
 
                 if (_Difference == 1) {
-                    cb = lerp(luminance(col), float3(1, 0, 0), saturate(dot(difference, 1) / 3.0f));
+                    cb = lerp(luminance(col), float3(1, 0, 0), saturate(dot(difference, 1)));
                 }
 
                 return float4(saturate(cb), 1.0f);
@@ -102,7 +88,7 @@ Shader "Hidden/ColorBlindess" {
                 float3 difference = abs(col.rgb - cb);
 
                 if (_Difference == 1) {
-                    cb = lerp(luminance(col), float3(1, 0, 0), saturate(dot(difference, 1) / 3.0f));
+                    cb = lerp(luminance(col), float3(1, 0, 0), saturate(dot(difference, 1)));
                 }
 
                 return float4(saturate(cb), 1.0f);
@@ -133,7 +119,7 @@ Shader "Hidden/ColorBlindess" {
                 float3 difference = abs(col.rgb - cb);
 
                 if (_Difference == 1) {
-                    cb = lerp(luminance(col), float3(1, 0, 0), saturate(dot(difference, 1) / 3.0f));
+                    cb = lerp(luminance(col), float3(1, 0, 0), saturate(dot(difference, 1)));
                 }
 
                 return float4(saturate(cb), 1.0f);
