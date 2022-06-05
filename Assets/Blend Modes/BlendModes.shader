@@ -26,8 +26,19 @@ Shader "Hidden/BlendModes" {
             return o;
         }
         
-        sampler2D _MainTex;
+        sampler2D _MainTex, _BlendTex;
+        int _BlendType;
         float _Strength;
+        float4 _BlendColor;
+
+        float4 GetBlendLayer(float2 uv) {
+            if (_BlendType == 0)
+                return tex2D(_MainTex, uv);
+            else if (_BlendType == 1)
+                return tex2D(_BlendTex, uv);
+            else
+                return _BlendColor;
+        }
 
         ENDCG
         
@@ -38,9 +49,22 @@ Shader "Hidden/BlendModes" {
             #pragma fragment fp
 
             fixed4 fp(v2f i) : SV_Target {
-                float4 col = tex2D(_MainTex, i.uv);
+                return tex2D(_MainTex, i.uv);
+            }
+            ENDCG
+        }
 
-                return col;
+        // Multiply
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            fixed4 fp(v2f i) : SV_Target {
+                float4 col = tex2D(_MainTex, i.uv);
+                float4 blend = GetBlendLayer(i.uv);
+
+                return float4(lerp(col.rgb, col.rgb * blend.rgb, _Strength), col.a);
             }
             ENDCG
         }
