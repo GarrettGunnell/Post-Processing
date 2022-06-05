@@ -40,6 +40,10 @@ Shader "Hidden/BlendModes" {
                 return _BlendColor;
         }
 
+        float luminance(float3 color) {
+            return dot(color, float3(0.299f, 0.587f, 0.114f));
+        }
+
         ENDCG
         
         // No Blend
@@ -61,10 +65,10 @@ Shader "Hidden/BlendModes" {
             #pragma fragment fp
 
             fixed4 fp(v2f i) : SV_Target {
-                float4 col = tex2D(_MainTex, i.uv);
-                float4 blend = GetBlendLayer(i.uv);
+                float4 a = tex2D(_MainTex, i.uv);
+                float4 b = GetBlendLayer(i.uv);
 
-                return float4(lerp(col.rgb, col.rgb * blend.rgb, _Strength), col.a);
+                return float4(lerp(a.rgb, a.rgb * b.rgb, _Strength), a.a);
             }
             ENDCG
         }
@@ -76,12 +80,34 @@ Shader "Hidden/BlendModes" {
             #pragma fragment fp
 
             fixed4 fp(v2f i) : SV_Target {
-                float4 col = tex2D(_MainTex, i.uv);
-                float4 blend = GetBlendLayer(i.uv);
+                float4 a = tex2D(_MainTex, i.uv);
+                float4 b = GetBlendLayer(i.uv);
 
-                float3 blended = 1.0f - (1.0f - col.rgb) * (1.0f - blend.rgb);
+                float3 blended = 1.0f - (1.0f - a.rgb) * (1.0f - b.rgb);
 
-                return float4(lerp(col.rgb, blended, _Strength), col.a);
+                return float4(lerp(a.rgb, blended, _Strength), a.a);
+            }
+            ENDCG
+        }
+
+        // Overlay
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            fixed4 fp(v2f i) : SV_Target {
+                float4 a = tex2D(_MainTex, i.uv);
+                float4 b = GetBlendLayer(i.uv);
+
+                float3 blended = 1.0f;
+
+                if (luminance(a) < 0.5)
+                    blended = 2.0f * a.rgb * b.rgb;
+                else
+                    blended = 1.0f - 2.0f * (1.0f - a.rgb) * (1.0f - b.rgb);
+
+                return float4(lerp(a.rgb, blended, _Strength), a.a);
             }
             ENDCG
         }
