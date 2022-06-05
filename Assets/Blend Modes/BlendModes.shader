@@ -68,5 +68,22 @@ Shader "Hidden/BlendModes" {
             }
             ENDCG
         }
+
+        // Screen
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            fixed4 fp(v2f i) : SV_Target {
+                float4 col = tex2D(_MainTex, i.uv);
+                float4 blend = GetBlendLayer(i.uv);
+
+                float3 blended = 1.0f - (1.0f - col.rgb) * (1.0f - blend.rgb);
+
+                return float4(lerp(col.rgb, blended, _Strength), col.a);
+            }
+            ENDCG
+        }
     }
 }
