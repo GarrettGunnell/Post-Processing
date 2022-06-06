@@ -14,7 +14,8 @@ public class BlendModes : MonoBehaviour {
         HardLight,
         SoftLight,
         ColorDodge,
-        ColorBurn
+        ColorBurn,
+        VividLight
     } public BlendMode blendMode;
 
     public Texture blendTexture;

@@ -181,6 +181,7 @@ Shader "Hidden/BlendModes" {
                 float4 a = tex2D(_MainTex, i.uv);
                 float4 b = GetBlendLayer(i.uv);
 
+                b -= 0.001f;
                 float4 blended = a / (1.0f - b);
                 blended = saturate(blended);
 
@@ -199,10 +200,36 @@ Shader "Hidden/BlendModes" {
                 float4 a = tex2D(_MainTex, i.uv);
                 float4 b = GetBlendLayer(i.uv);
 
+                b += 0.001f;
                 float4 blended = 1.0f - ((1.0f - a) / b);
                 blended = saturate(blended);
 
                 return float4(lerp(a.rgb, blended.rgb, _Strength), a.a);
+            }
+            ENDCG
+        }
+
+        // Vivid Light
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            fixed4 fp(v2f i) : SV_Target {
+                float4 a = tex2D(_MainTex, i.uv);
+                float4 b = GetBlendLayer(i.uv);
+
+                float3 blended = 1.0f;
+
+                if (luminance(b) <= 0.5) {
+                    b += 0.001f;
+                    blended = 1.0f - ((1.0f - a) / (2.0f * b));
+                } else {
+                    b -= 0.001f;
+                    blended = a / (2 * (1.0f - b));
+                }
+
+                return float4(lerp(a.rgb, blended, _Strength), a.a);
             }
             ENDCG
         }
