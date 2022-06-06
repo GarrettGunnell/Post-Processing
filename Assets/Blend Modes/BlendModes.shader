@@ -133,5 +133,27 @@ Shader "Hidden/BlendModes" {
             }
             ENDCG
         }
+
+        // Soft Light
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            fixed4 fp(v2f i) : SV_Target {
+                float4 a = tex2D(_MainTex, i.uv);
+                float4 b = GetBlendLayer(i.uv);
+
+                float4 blended = 1.0f;
+
+                if (luminance(b) < 0.5)
+                    blended = 2.0f * a * b + (a * a) * (1.0f - 2.0f * b);
+                else
+                    blended = 2.0f * a * (1.0f - b) + sqrt(a) * (2.0f * b - 1.0f);
+
+                return float4(lerp(a.rgb, blended.rgb, _Strength), a.a);
+            }
+            ENDCG
+        }
     }
 }
