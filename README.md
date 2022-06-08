@@ -12,17 +12,15 @@ These effects are modular only for ease of experimentation and finding what look
 
 * **Fog**
 * * Distance
-* **Bloom**
+* **Bloom (HDR)**
 * **Depth Based Edge Detection**
-* **Color Correction**
+* **Color Correction (HDR)**
 * * Exposure
 * * White Balancing
 * * Contrast
 * * Brightness
 * * Color Filtering
 * * Saturation
-* **Hue Shifting**
-* **Sharpness**
 * **Tonemapping**
 * * RGB Clamp
 * * Tumblin Rushmeier
@@ -34,6 +32,16 @@ These effects are modular only for ease of experimentation and finding what look
 * * Uchimura
 * * Narkowicz ACES
 * * Hill ACES
+* **Hue Shifting**
+* **Sharpness**
+* **Blend Modes**
+* * Add/Subtract
+* * Multiply
+* * Color Burn
+* * Color Dodge
+* * Overlay
+* * Soft Light
+* * Vivid Light
 * **Pixel Art Effects**
 * * Downsampling
 * * Dithering

@@ -8,10 +8,10 @@ public class BlendModes : MonoBehaviour {
     public enum BlendMode {
         NoBlend = 0,
         Add,
+        Subtract,
         Multiply,
         Screen,
         Overlay,
-        HardLight,
         SoftLight,
         ColorDodge,
         ColorBurn,
