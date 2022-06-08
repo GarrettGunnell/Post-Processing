@@ -117,6 +117,46 @@ These effects are modular only for ease of experimentation and finding what look
 
 ![hill](./examples/13_hillACES.png)
 
+# Blend Modes
+
+All examples are blended with themselves, the image is a gradient from no blending to full blend.
+
+## Add
+
+![addblend](./examples/Blend_Add.png)
+
+## Subtract
+
+![subtract](./examples/Blend_Subtract.png)
+
+## Screen
+
+![screen](./examples/Blend_Screen.png)
+
+## Multiply
+
+![multiply](./examples/Blend_Multiply.png)
+
+## Color Dodge
+
+![colordodge](./examples/BlendColorDodge.png)
+
+## Color Burn
+
+![colorburn](./examples/BlendColorBurn.png)
+
+## Overlay
+
+![overlay](./examples/Blend_Overlay.png)
+
+## Soft Light
+
+![softlight](./examples/Blend_SoftLight.png)
+
+## Vivid Light
+
+![vividlight](./examples/Blend_VividLight.png)
+
 # Pixel Art
 
 Open images in their full resolution for optimal viewing.
