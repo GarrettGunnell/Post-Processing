@@ -2,7 +2,7 @@
 
 This code accompanies my [series on Post Processing](https://www.youtube.com/playlist?list=PLUKV95Q13e_Un6ADYZ9NyWJ3W1R2cbCYv) on YouTube.
 
-This is made for Unity 2021.3.1 using the built in pipeline.
+This is made for Unity 2021.3.1 using the built-in pipeline.
 
 ## Disclaimer
 
