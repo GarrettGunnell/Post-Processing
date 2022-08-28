@@ -34,6 +34,8 @@ These effects are modular only for ease of experimentation and finding what look
 * * Hill ACES
 * **Hue Shifting**
 * **Sharpness**
+* * Basic Sharpening
+* * Contrast Adaptive Sharpness
 * **Blend Modes**
 * * Add/Subtract
 * * Multiply
