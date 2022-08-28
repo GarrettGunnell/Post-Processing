@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Sharpness : MonoBehaviour {
+public class SharpnessDispatcher : MonoBehaviour {
     public Shader sharpnessShader;
     
     [Range(-10.0f, 10.0f)]

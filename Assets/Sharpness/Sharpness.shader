@@ -33,9 +33,8 @@ Shader "Hidden/Sharpness" {
             float4 _MainTex_TexelSize;
             float _Amount;
 
-            fixed4 fp(v2f i) : SV_Target {
-                int x, y;
-                fixed4 col = tex2D(_MainTex, i.uv);
+            float4 fp(v2f i) : SV_Target {
+                float4 col = tex2D(_MainTex, i.uv);
 
                 float neighbor = _Amount * -1;
                 float center = _Amount * 4 + 1;
