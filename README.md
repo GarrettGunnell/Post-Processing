@@ -218,4 +218,5 @@ Riot Games is aware of this issue and provides a color blind mode in the options
 https://catlikecoding.com/unity/tutorials/custom-srp/color-grading/ </br>
 https://github.com/tizian/tonemapper </br>
 https://en.wikipedia.org/wiki/Ordered_dithering </br>
-https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html
+https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html </br>
+https://en.wikipedia.org/wiki/Kuwahara_filter
