@@ -75,7 +75,7 @@ Shader "Hidden/Kuwahara" {
                 if (quadrant.x) return float4(q1.rgb, 1.0f);
                 if (quadrant.y) return float4(q2.rgb, 1.0f);
                 if (quadrant.z) return float4(q3.rgb, 1.0f);
-                if (quadrant.w) return float4(q4.rgb, 1.0f);
+                else            return float4(q4.rgb, 1.0f);
             }
             ENDCG
         }
