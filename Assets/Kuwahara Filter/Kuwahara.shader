@@ -38,7 +38,7 @@ Shader "Hidden/Kuwahara" {
             }
 
             // Returns avg color in .rgb, std in .a
-            float4 SampleQuadrant(float2 uv, int x1, int x2, int y1, int y2, int n) {
+            float4 SampleQuadrant(float2 uv, int x1, int x2, int y1, int y2, float n) {
                 float luminance_sum = 0.0f;
                 float luminance_sum2 = 0.0f;
                 float3 col_sum = 0.0f;
@@ -54,7 +54,7 @@ Shader "Hidden/Kuwahara" {
                 }
 
                 float mean = luminance_sum / n;
-                float std = sqrt((luminance_sum2 / n) - (mean * mean));
+                float std = abs(luminance_sum2 / n - mean * mean);
 
                 return float4(col_sum / n, std);
             }
@@ -70,12 +70,12 @@ Shader "Hidden/Kuwahara" {
                 float4 q4 = SampleQuadrant(i.uv, -_KernelSize, 0, 0, _KernelSize, numSamples);
 
                 float minstd = min(q1.a, min(q2.a, min(q3.a, q4.a)));
-                bool4 quadrant = float4(q1.a, q2.a, q3.a, q4.a) <= minstd;
-                
-                if (quadrant.x) return float4(q1.rgb, 1.0f);
-                if (quadrant.y) return float4(q2.rgb, 1.0f);
-                if (quadrant.z) return float4(q3.rgb, 1.0f);
-                else            return float4(q4.rgb, 1.0f);
+                int4 q = float4(q1.a, q2.a, q3.a, q4.a) == minstd;
+ 
+                if (dot(q, 1) > 1)
+                    return float4((q1.rgb + q2.rgb + q3.rgb + q4.rgb) / 4.0f, 1.0f);
+                else
+                    return float4(q1.rgb * q.x + q2.rgb * q.y + q3.rgb * q.z + q4.rgb * q.w, 1.0f);
             }
             ENDCG
         }
