@@ -54,6 +54,9 @@ These effects are modular only for ease of experimentation and finding what look
 * * Protanopia/Protanomaly
 * * Deuteranopia/Deuteranomaly
 * * Tritanopia/Tritanomaly
+* **Kuwahara Filtering**
+* * Basic Kuwahara
+* * Generalized Kuwahara
 
 # Examples
 
