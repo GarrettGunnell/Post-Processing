@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GeneralizedKuwahara : MonoBehaviour {
+public class AnisotropicKuwahara : MonoBehaviour {
     public Shader kuwaharaShader;
     
     [Range(1, 20)]
