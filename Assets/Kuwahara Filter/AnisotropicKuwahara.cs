@@ -11,6 +11,8 @@ public class AnisotropicKuwahara : MonoBehaviour {
     public float sharpness = 8;
     [Range(1.0f, 100.0f)]
     public float hardness = 8;
+    [Range(0.01f, 2.0f)]
+    public float alpha = 1.0f;
 
     private Material kuwaharaMat;
 
@@ -35,11 +37,20 @@ public class AnisotropicKuwahara : MonoBehaviour {
         kuwaharaMat.SetInt("_N", 8);
         kuwaharaMat.SetFloat("_Q", sharpness);
         kuwaharaMat.SetFloat("_Hardness", hardness);
-
         kuwaharaMat.SetTexture("_K0", weights2);
+        kuwaharaMat.SetFloat("_Alpha", alpha);
 
-        //Graphics.Blit(weights2, destination);
-        Graphics.Blit(source, destination, kuwaharaMat, 2);
+        var structureTensor = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        Graphics.Blit(source, structureTensor, kuwaharaMat, 2);
+        var eigenvectors = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        Graphics.Blit(structureTensor, eigenvectors, kuwaharaMat, 3);
+        kuwaharaMat.SetTexture("_TFM", eigenvectors);
+
+        //Graphics.Blit(structureTensor, destination);
+        Graphics.Blit(source, destination, kuwaharaMat, 4);
+
+        RenderTexture.ReleaseTemporary(structureTensor);
+        RenderTexture.ReleaseTemporary(eigenvectors);
     }
 
     void OnDisable() {
