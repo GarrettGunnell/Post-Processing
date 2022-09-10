@@ -13,6 +13,8 @@ public class AnisotropicKuwahara : MonoBehaviour {
     public float hardness = 8;
     [Range(0.01f, 2.0f)]
     public float alpha = 1.0f;
+    [Range(0.01f, 2.0f)]
+    public float zeroCrossing = 0.58f;
 
     private Material kuwaharaMat;
 
@@ -28,6 +30,7 @@ public class AnisotropicKuwahara : MonoBehaviour {
         kuwaharaMat.SetFloat("_Q", sharpness);
         kuwaharaMat.SetFloat("_Hardness", hardness);
         kuwaharaMat.SetFloat("_Alpha", alpha);
+        kuwaharaMat.SetFloat("_ZeroCrossing", zeroCrossing);
 
         var structureTensor = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
         Graphics.Blit(source, structureTensor, kuwaharaMat, 0);

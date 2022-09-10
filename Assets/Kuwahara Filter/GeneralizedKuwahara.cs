@@ -35,7 +35,6 @@ public class GeneralizedKuwahara : MonoBehaviour {
         kuwaharaMat.SetInt("_N", 8);
         kuwaharaMat.SetFloat("_Q", sharpness);
         kuwaharaMat.SetFloat("_Hardness", hardness);
-
         kuwaharaMat.SetTexture("_K0", weights2);
 
         //Graphics.Blit(weights2, destination);

@@ -31,7 +31,7 @@ Shader "Hidden/AnisotropicKuwahara" {
         sampler2D _MainTex, _TFM;
         float4 _MainTex_TexelSize;
         int _KernelSize, _N, _Size;
-        float _Hardness, _Q, _Alpha;
+        float _Hardness, _Q, _Alpha, _ZeroCrossing;
 
         float gaussian(float sigma, float pos) {
             return (1.0f / sqrt(2.0f * PI * sigma * sigma)) * exp(-(pos * pos) / (2.0f * sigma * sigma));
@@ -144,7 +144,7 @@ Shader "Hidden/AnisotropicKuwahara" {
 
                 float zeta = 2.0f / (_KernelSize / 2);
 
-                float zeroCross = (3 * PI) / (2 * _N);
+                float zeroCross = _ZeroCrossing;
                 float sinZeroCross = sin(zeroCross);
                 float eta = (zeta + cos(zeroCross)) / (sinZeroCross * sinZeroCross);
                 int k;
