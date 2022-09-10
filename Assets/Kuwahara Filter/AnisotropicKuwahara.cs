@@ -39,7 +39,6 @@ public class AnisotropicKuwahara : MonoBehaviour {
         Graphics.Blit(source, destination, kuwaharaMat, 2);
 
         RenderTexture.ReleaseTemporary(structureTensor);
-        RenderTexture.ReleaseTemporary(eigenvectors1);
-        RenderTexture.ReleaseTemporary(eigenvectors2);
+        RenderTexture.ReleaseTemporary(eigenvectors);
     }
 }

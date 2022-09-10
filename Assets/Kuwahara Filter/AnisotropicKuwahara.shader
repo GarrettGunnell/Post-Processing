@@ -34,10 +34,6 @@ Shader "Hidden/AnisotropicKuwahara" {
         float _Hardness, _Q, _Alpha;
 
         float gaussian(float sigma, float pos) {
-            return (1.0f / sqrt(2 * PI * sigma * sigma)) * exp(-(pos * pos) / (2.0f * sigma * sigma));
-        }
-
-        float gaussian(float sigma, float pos) {
             return (1.0f / sqrt(2.0f * PI * sigma * sigma)) * exp(-(pos * pos) / (2.0f * sigma * sigma));
         }
 
@@ -151,6 +147,14 @@ Shader "Hidden/AnisotropicKuwahara" {
                 float zeroCross = (3 * PI) / (2 * _N);
                 float sinZeroCross = sin(zeroCross);
                 float eta = (zeta + cos(zeroCross)) / (sinZeroCross * sinZeroCross);
+                int k;
+                float4 m[8];
+                float3 s[8];
+
+                for (k = 0; k < _N; ++k) {
+                    m[k] = 0.0f;
+                    s[k] = 0.0f;
+                }
 
                 [loop]
                 for (int y = 0; y <= max_y; ++y) {
