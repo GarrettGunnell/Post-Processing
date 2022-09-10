@@ -42,15 +42,18 @@ public class AnisotropicKuwahara : MonoBehaviour {
 
         var structureTensor = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
         Graphics.Blit(source, structureTensor, kuwaharaMat, 2);
-        var eigenvectors = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
-        Graphics.Blit(structureTensor, eigenvectors, kuwaharaMat, 3);
-        kuwaharaMat.SetTexture("_TFM", eigenvectors);
+        var eigenvectors1 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        Graphics.Blit(structureTensor, eigenvectors1, kuwaharaMat, 3);
+        var eigenvectors2 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        Graphics.Blit(eigenvectors1, eigenvectors2, kuwaharaMat, 4);
+        kuwaharaMat.SetTexture("_TFM", eigenvectors2);
 
-        //Graphics.Blit(structureTensor, destination);
-        Graphics.Blit(source, destination, kuwaharaMat, 4);
+        //Graphics.Blit(weights2, destination);
+        Graphics.Blit(source, destination, kuwaharaMat, 5);
 
         RenderTexture.ReleaseTemporary(structureTensor);
-        RenderTexture.ReleaseTemporary(eigenvectors);
+        RenderTexture.ReleaseTemporary(eigenvectors1);
+        RenderTexture.ReleaseTemporary(eigenvectors2);
     }
 
     void OnDisable() {

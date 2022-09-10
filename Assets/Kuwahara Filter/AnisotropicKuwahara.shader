@@ -37,6 +37,10 @@ Shader "Hidden/AnisotropicKuwahara" {
             return (1.0f / (2.0f * PI * sigma * sigma)) * exp(-((pos.x * pos.x + pos.y * pos.y) / (2.0f * sigma * sigma)));
         }
 
+        float gaussian(float sigma, float pos) {
+            return (1.0f / sqrt(2.0f * PI * sigma * sigma)) * exp(-(pos * pos) / (2.0f * sigma * sigma));
+        }
+
         ENDCG
 
         // Pre Compute Weights
@@ -49,9 +53,13 @@ Shader "Hidden/AnisotropicKuwahara" {
             float4 fp(v2f i) : SV_Target {
                 float2 pos = i.uv - 0.5f;
                 float phi = atan2(pos.y, pos.x);
-                int Xk = (-PI / _N) < phi && phi <= (PI / _N);
+                
+                float Xk[4];
+                for (int k = 0; k <= 3; ++k) {
+                    Xk[k] = (((2 * k - 1) * PI) / _N) < phi && phi <= (((2 * k + 1) * PI) / _N);
+                }
 
-                return dot(pos, pos) <= 0.25f ? Xk : 0;
+                return dot(pos, pos) <= 0.25f ? float4(Xk[0], Xk[1], Xk[2], Xk[3]) : 0;
             }
             ENDCG
         }
@@ -119,6 +127,30 @@ Shader "Hidden/AnisotropicKuwahara" {
             ENDCG
         }
 
+        // Blur Pass 1
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float4 fp(v2f i) : SV_Target {
+                int kernelRadius = 1;
+
+                float4 col = 0;
+                float kernelSum = 0.0f;
+                for (int x = -kernelRadius; x <= kernelRadius; ++x) {
+                    float4 c = tex2D(_MainTex, i.uv + float2(x, 0) * _MainTex_TexelSize.xy);
+                    float gauss = gaussian(2.0f, x);
+
+                    col += c * gauss;
+                    kernelSum += gauss;
+                }
+
+                return float4(col.rgb / kernelSum, 1.0f);
+            }
+            ENDCG
+        }
+
         // Blur Eigenvectors and calculate direction and anisotropy
         Pass {
             CGPROGRAM
@@ -126,18 +158,17 @@ Shader "Hidden/AnisotropicKuwahara" {
             #pragma fragment fp
 
             float4 fp(v2f i) : SV_Target {
-                int kernelRadius = 2 * 2;
+                int kernelRadius = 1;
 
                 float4 col = 0;
                 float kernelSum = 0.0f;
-                for (int x = -kernelRadius; x <= kernelRadius; ++x) {
-                    for (int y = -kernelRadius; y <= kernelRadius; ++y) {
-                        float4 c = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy);
-                        float gauss = gaussian(2.0f, float2(x, y));
 
-                        col += c * gauss;
-                        kernelSum += gauss;
-                    }
+                for (int y = -kernelRadius; y <= kernelRadius; ++y) {
+                    float4 c = tex2D(_MainTex, i.uv + float2(0, y) * _MainTex_TexelSize.xy);
+                    float gauss = gaussian(2.0f, y);
+
+                    col += c * gauss;
+                    kernelSum += gauss;
                 }
 
                 float3 g = col.rgb / kernelSum;
@@ -163,19 +194,6 @@ Shader "Hidden/AnisotropicKuwahara" {
             #pragma fragment fp
 
             float4 fp(v2f i) : SV_Target {
-                int k;
-                float4 m[8];
-                float3 s[8];
-
-                for (k = 0; k < _N; ++k) {
-                    m[k] = 0.0f;
-                    s[k] = 0.0f;
-                }
-
-                float piN = 2.0f * PI / float(_N);
-                float2x2 X = {cos(piN), sin(piN), 
-                             -sin(piN), cos(piN)};
-
                 float alpha = _Alpha;
                 float4 t = tex2D(_TFM, i.uv);
                 float a = float(_KernelSize) * clamp((alpha + t.w) / alpha, 0.1f, 2.0f);
@@ -195,19 +213,47 @@ Shader "Hidden/AnisotropicKuwahara" {
                 int max_x = int(sqrt(a * a * cos_phi * cos_phi + b * b * sin_phi * sin_phi));
                 int max_y = int(sqrt(a * a * sin_phi * sin_phi + b * b * cos_phi * cos_phi));
 
+                int k;
+                float4 m[8];
+                float3 s[8];
+
+                float3 c = tex2D(_MainTex, i.uv).rgb;
+                float w = tex2D(_K0, float2(0.5f, 0.5f)).x;
+                for (k = 0; k < _N; ++k) {
+                    m[k] = float4(c * w, w);
+                    s[k] = c * c * w;
+                }
+
                 [loop]
-                for (int y = -max_y; y <= max_y; ++y) {
+                for (int y = 0; y <= max_y; ++y) {
                     [loop]
                     for (int x = -max_x; x <= max_x; ++x) {
-                        float2 v = mul(SR, float2(x, y));
-                        float3 c = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy).rgb;
-                        for (k = 0; k < _N; ++k) {
-                            float w = tex2D(_K0, 0.5f + v).x;
+                        if ((y != 0) || (x > 0)) {
+                            float2 v = mul(SR, float2(x, y));
+                            
+                            float3 c0 = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy).rgb;
+                            float3 c1 = tex2D(_MainTex, i.uv - float2(x, y) * _MainTex_TexelSize.xy).rgb;
 
-                            m[k] += float4(c * w, w);
-                            s[k] += c * c * w;
+                            float3 cc0 = c0 * c0;
+                            float3 cc1 = c1 * c1;
 
-                            v = mul(X, v);
+                            float4 w0123 = tex2D(_K0, float2(0.5f, 0.5f) + v);
+                            for (k = 0; k < 4; ++k) {
+                                m[k] += float4(c0 * w0123[k], w0123[k]);
+                                s[k] += cc0 * w0123[k];
+
+                                m[k + 4] += float4(c1 * w0123[k], w0123[k]);
+                                s[k + 4] += cc1 * w0123[k];
+                            }
+
+                            float4 w4567 = tex2D(_K0, float2(0.5f, 0.5f) - v);
+                            for (k = 0; k < 4; ++k) {
+                                m[k + 4] += float4(c0 * w4567[k], w4567[k]);
+                                s[k + 4] += cc0 * w4567[k];
+
+                                m[k] += float4(c1 * w4567[k], w4567[k]);
+                                s[k] += cc1 * w4567[k];
+                            }
                         }
                     }
                 }
@@ -222,7 +268,7 @@ Shader "Hidden/AnisotropicKuwahara" {
 
                     output += float4(m[k].rgb * w, w);
                 }
-
+                
                 return output / output.w;
             }
             ENDCG
