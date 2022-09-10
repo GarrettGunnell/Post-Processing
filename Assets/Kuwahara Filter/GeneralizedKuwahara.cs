@@ -5,8 +5,8 @@ using UnityEngine;
 public class GeneralizedKuwahara : MonoBehaviour {
     public Shader kuwaharaShader;
     
-    [Range(1, 20)]
-    public int kernelSize = 1;
+    [Range(2, 20)]
+    public int kernelSize = 2;
     [Range(1.0f, 18.0f)]
     public float sharpness = 8;
     [Range(1.0f, 100.0f)]

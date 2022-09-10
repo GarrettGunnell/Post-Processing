@@ -105,9 +105,9 @@ Shader "Hidden/GeneralizedKuwahara" {
                 float2x2 X = {cos(piN), sin(piN), 
                              -sin(piN), cos(piN)};
 
-                for (int x = -_KernelSize; x <= _KernelSize; ++x) {
-                    for (int y = -_KernelSize; y <= _KernelSize; ++y) {
-                        float2 v = 0.5f * float2(x, y) / float(_KernelSize);
+                for (int x = -(_KernelSize / 2); x <= (_KernelSize / 2); ++x) {
+                    for (int y = -(_KernelSize / 2); y <= (_KernelSize / 2); ++y) {
+                        float2 v = 0.5f * float2(x, y) / float((_KernelSize / 2));
                         float3 c = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy).rgb;
                         for (k = 0; k < _N; ++k) {
                             float w = tex2D(_K0, 0.5f + v).x;
