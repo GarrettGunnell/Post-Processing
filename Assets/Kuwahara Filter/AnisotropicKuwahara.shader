@@ -28,63 +28,16 @@ Shader "Hidden/AnisotropicKuwahara" {
 
         #define PI 3.14159265358979323846f
         
-        sampler2D _MainTex, _K0, _TFM;
+        sampler2D _MainTex, _TFM;
         float4 _MainTex_TexelSize;
         int _KernelSize, _N, _Size;
         float _Hardness, _Q, _Alpha;
 
-        float gaussian(float sigma, float2 pos) {
-            return (1.0f / (2.0f * PI * sigma * sigma)) * exp(-((pos.x * pos.x + pos.y * pos.y) / (2.0f * sigma * sigma)));
+        float gaussian(float sigma, float pos) {
+            return (1.0f / sqrt(2 * PI * sigma * sigma)) * exp(-(pos * pos) / (2.0f * sigma * sigma));
         }
 
         ENDCG
-
-        // Pre Compute Weights
-        // Calculate Section
-        Pass {
-            CGPROGRAM
-            #pragma vertex vp
-            #pragma fragment fp
-
-            float4 fp(v2f i) : SV_Target {
-                float2 pos = i.uv - 0.5f;
-                float phi = atan2(pos.y, pos.x);
-                int Xk = (-PI / _N) < phi && phi <= (PI / _N);
-
-                return dot(pos, pos) <= 0.25f ? Xk : 0;
-            }
-            ENDCG
-        }
-
-        // Gaussian Filter Section
-        Pass {
-            CGPROGRAM
-            #pragma vertex vp
-            #pragma fragment fp
-
-            float4 fp(v2f i) : SV_Target {
-                // Calculated from the resolution of the gaussian weight texture, anything beyond 32x32 seems to make no difference so it is hard coded
-                float sigmaR = 0.5f * ((32.0f) * 0.5f);
-                float sigmaS = 0.33f * sigmaR;
-
-                float4 col = 0;
-                float kernelSum = 0.0f;
-                for (int x = -floor(sigmaS); x <= floor(sigmaS); ++x) {
-                    for (int y = -floor(sigmaS); y <= floor(sigmaS); ++y) {
-                        float4 c = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy);
-                        float gauss = gaussian(sigmaS, float2(x, y));
-
-                        col += c * gauss;
-                        kernelSum += gauss;
-                    }
-                }
-
-                float4 output = (col / kernelSum) * gaussian(sigmaR, (i.uv - 0.5f) * sigmaR * 5);
-
-                return output;
-            }
-            ENDCG
-        }
 
         // Calculate Eigenvectors
         Pass {
@@ -130,14 +83,21 @@ Shader "Hidden/AnisotropicKuwahara" {
 
                 float4 col = 0;
                 float kernelSum = 0.0f;
-                for (int x = -kernelRadius; x <= kernelRadius; ++x) {
-                    for (int y = -kernelRadius; y <= kernelRadius; ++y) {
-                        float4 c = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy);
-                        float gauss = gaussian(2.0f, float2(x, y));
 
-                        col += c * gauss;
-                        kernelSum += gauss;
-                    }
+                for (int x = -kernelRadius; x <= kernelRadius; ++x) {
+                    float4 c = tex2D(_MainTex, i.uv + float2(x, 0) * _MainTex_TexelSize.xy);
+                    float gauss = gaussian(2.0f, x);
+
+                    col += c * gauss;
+                    kernelSum += gauss;
+                }
+
+                for (int y = -kernelRadius; y <= kernelRadius; ++y) {
+                    float4 c = tex2D(_MainTex, i.uv + float2(0, y) * _MainTex_TexelSize.xy);
+                    float gauss = gaussian(2.0f, y);
+
+                    col += c * gauss;
+                    kernelSum += gauss;
                 }
 
                 float3 g = col.rgb / kernelSum;
@@ -178,8 +138,8 @@ Shader "Hidden/AnisotropicKuwahara" {
 
                 float alpha = _Alpha;
                 float4 t = tex2D(_TFM, i.uv);
-                float a = float(_KernelSize) * clamp((alpha + t.w) / alpha, 0.1f, 2.0f);
-                float b = float(_KernelSize) * clamp(alpha / (alpha + t.w), 0.1f, 2.0f);
+                float a = float((_KernelSize / 2.0f)) * clamp((alpha + t.w) / alpha, 0.1f, 2.0f);
+                float b = float((_KernelSize / 2.0f)) * clamp(alpha / (alpha + t.w), 0.1f, 2.0f);
                 
                 float cos_phi = cos(t.z);
                 float sin_phi = sin(t.z);
@@ -195,19 +155,59 @@ Shader "Hidden/AnisotropicKuwahara" {
                 int max_x = int(sqrt(a * a * cos_phi * cos_phi + b * b * sin_phi * sin_phi));
                 int max_y = int(sqrt(a * a * sin_phi * sin_phi + b * b * cos_phi * cos_phi));
 
+                float zeta = 2.0f / (_KernelSize / 2);
+
+                float zeroCross = (3 * PI) / (2 * _N);
+                float sinZeroCross = sin(zeroCross);
+                float eta = (zeta + cos(zeroCross)) / (sinZeroCross * sinZeroCross);
+
                 [loop]
                 for (int y = -max_y; y <= max_y; ++y) {
                     [loop]
                     for (int x = -max_x; x <= max_x; ++x) {
                         float2 v = mul(SR, float2(x, y));
                         float3 c = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy).rgb;
-                        for (k = 0; k < _N; ++k) {
-                            float w = tex2D(_K0, 0.5f + v).x;
-
-                            m[k] += float4(c * w, w);
-                            s[k] += c * c * w;
-
-                            v = mul(X, v);
+                        float sum = 0;
+                        float w[8];
+                        float z, vxx, vyy;
+                        
+                        /* Calculate Polynomial Weights */
+                        vxx = zeta - eta * v.x * v.x;
+                        vyy = zeta - eta * v.y * v.y;
+                        z = max(0, v.y + vxx); 
+                        w[0] = z * z;
+                        sum += w[0];
+                        z = max(0, -v.x + vyy); 
+                        w[2] = z * z;
+                        sum += w[2];
+                        z = max(0, -v.y + vxx); 
+                        w[4] = z * z;
+                        sum += w[4];
+                        z = max(0, v.x + vyy); 
+                        w[6] = z * z;
+                        sum += w[6];
+                        v = sqrt(2.0f) / 2.0f * float2(v.x - v.y, v.x + v.y);
+                        vxx = zeta - eta * v.x * v.x;
+                        vyy = zeta - eta * v.y * v.y;
+                        z = max(0, v.y + vxx); 
+                        w[1] = z * z;
+                        sum += w[1];
+                        z = max(0, -v.x + vyy); 
+                        w[3] = z * z;
+                        sum += w[3];
+                        z = max(0, -v.y + vxx); 
+                        w[5] = z * z;
+                        sum += w[5];
+                        z = max(0, v.x + vyy); 
+                        w[7] = z * z;
+                        sum += w[7];
+                        
+                        float g = exp(-3.125f * dot(v,v)) / sum;
+                        
+                        for (int k = 0; k < 8; ++k) {
+                            float wk = w[k] * g;
+                            m[k] += float4(c * wk, wk);
+                            s[k] += c * c * wk;
                         }
                     }
                 }
