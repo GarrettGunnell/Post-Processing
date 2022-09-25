@@ -33,7 +33,7 @@ public class BlendModes : MonoBehaviour {
 
     private Material blendModesMat;
     
-    void Start() {
+    void OnEnable() {
         blendModesMat ??= new Material(blendModesShader);
         blendModesMat.hideFlags = HideFlags.HideAndDontSave;
     }

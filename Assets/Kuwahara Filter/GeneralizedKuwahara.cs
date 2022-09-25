@@ -44,5 +44,6 @@ public class GeneralizedKuwahara : MonoBehaviour {
     void OnDisable() {
         weights.Release();
         weights2.Release();
+        kuwaharaMat = null;
     }
 }

@@ -19,4 +19,8 @@ public class Kuwahara : MonoBehaviour {
         kuwaharaMat.SetFloat("_KernelSize", kernelSize);
         Graphics.Blit(source, destination, kuwaharaMat);
     }
+
+    void OnDisable() {
+        kuwaharaMat = null;
+    }
 }

@@ -18,7 +18,6 @@ public class AnisotropicKuwahara : MonoBehaviour {
 
     private Material kuwaharaMat;
 
-    
     void OnEnable() {
         kuwaharaMat ??= new Material(kuwaharaShader);
         kuwaharaMat.hideFlags = HideFlags.HideAndDontSave;
@@ -43,5 +42,9 @@ public class AnisotropicKuwahara : MonoBehaviour {
 
         RenderTexture.ReleaseTemporary(structureTensor);
         RenderTexture.ReleaseTemporary(eigenvectors);
+    }
+
+    void OnDisable() {
+        kuwaharaMat = null;
     }
 }
