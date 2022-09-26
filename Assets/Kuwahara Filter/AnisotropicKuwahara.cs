@@ -19,7 +19,7 @@ public class AnisotropicKuwahara : MonoBehaviour {
     private Material kuwaharaMat;
 
     void OnEnable() {
-        kuwaharaMat ??= new Material(kuwaharaShader);
+        kuwaharaMat = new Material(kuwaharaShader);
         kuwaharaMat.hideFlags = HideFlags.HideAndDontSave;
     }
 
