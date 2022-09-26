@@ -79,7 +79,7 @@ Shader "Hidden/AnisotropicKuwahara" {
             #pragma fragment fp
 
             float4 fp(v2f i) : SV_Target {
-                int kernelRadius = 1;
+                int kernelRadius = 5;
 
                 float4 col = 0;
                 float kernelSum = 0.0f;
@@ -91,6 +91,23 @@ Shader "Hidden/AnisotropicKuwahara" {
                     col += c * gauss;
                     kernelSum += gauss;
                 }
+
+                return col / kernelSum;
+            }
+            ENDCG
+        }
+
+        // Blur Pass 2
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float4 fp(v2f i) : SV_Target {
+                int kernelRadius = 5;
+
+                float4 col = 0;
+                float kernelSum = 0.0f;
 
                 for (int y = -kernelRadius; y <= kernelRadius; ++y) {
                     float4 c = tex2D(_MainTex, i.uv + float2(0, y) * _MainTex_TexelSize.xy);
