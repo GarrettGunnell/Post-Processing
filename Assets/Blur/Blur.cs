@@ -13,6 +13,9 @@ public class Blur : MonoBehaviour {
     [Range(3, 20)]
     public int kernelSize = 3;
 
+    [Range(0.1f, 10.0f)]
+    public float sigma = 2.0f;
+
     [Range(1, 10)]
     public int blurPasses = 1;
 
@@ -25,6 +28,7 @@ public class Blur : MonoBehaviour {
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
         blurMat.SetFloat("_KernelSize", kernelSize);
+        blurMat.SetFloat("_Sigma", sigma);
         
         var blur1 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
         var blur2 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
