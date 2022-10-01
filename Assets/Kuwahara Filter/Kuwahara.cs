@@ -10,8 +10,8 @@ public class Kuwahara : MonoBehaviour {
 
     private Material kuwaharaMat;
     
-    void Start() {
-        kuwaharaMat ??= new Material(kuwaharaShader);
+    void OnEnable() {
+        kuwaharaMat = new Material(kuwaharaShader);
         kuwaharaMat.hideFlags = HideFlags.HideAndDontSave;
     }
 
