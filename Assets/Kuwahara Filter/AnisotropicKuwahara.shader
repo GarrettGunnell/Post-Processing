@@ -180,6 +180,7 @@ Shader "Hidden/AnisotropicKuwahara" {
                         float2 v = mul(SR, float2(x, y));
                         if (dot(v, v) <= 0.25f) {
                             float3 c = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy).rgb;
+                            c = saturate(c);
                             float sum = 0;
                             float w[8];
                             float z, vxx, vyy;
@@ -237,7 +238,7 @@ Shader "Hidden/AnisotropicKuwahara" {
                     output += float4(m[k].rgb * w, w);
                 }
                 
-                return output / output.w;
+                return saturate(output / output.w);
             }
             ENDCG
         }

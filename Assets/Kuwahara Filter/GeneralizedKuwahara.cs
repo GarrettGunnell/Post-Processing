@@ -11,6 +11,9 @@ public class GeneralizedKuwahara : MonoBehaviour {
     public float sharpness = 8;
     [Range(1.0f, 100.0f)]
     public float hardness = 8;
+    
+    [Range(1, 4)]
+    public int passes = 1;
 
     private Material kuwaharaMat;
 
@@ -36,9 +39,24 @@ public class GeneralizedKuwahara : MonoBehaviour {
         kuwaharaMat.SetFloat("_Q", sharpness);
         kuwaharaMat.SetFloat("_Hardness", hardness);
         kuwaharaMat.SetTexture("_K0", weights2);
+        
+        RenderTexture[] kuwaharaPasses = new RenderTexture[passes];
 
+        for (int i = 0; i < passes; ++i) {
+            kuwaharaPasses[i] = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        }
+
+        Graphics.Blit(source, kuwaharaPasses[0], kuwaharaMat, 2);
+
+        for (int i = 1; i < passes; ++i) {
+            Graphics.Blit(kuwaharaPasses[i - 1], kuwaharaPasses[i], kuwaharaMat, 2);
+        }
+
+        Graphics.Blit(kuwaharaPasses[passes - 1], destination);
         //Graphics.Blit(weights2, destination);
-        Graphics.Blit(source, destination, kuwaharaMat, 2);
+        for (int i = 0; i < passes; ++i) {
+            RenderTexture.ReleaseTemporary(kuwaharaPasses[i]);
+        }
     }
 
     void OnDisable() {

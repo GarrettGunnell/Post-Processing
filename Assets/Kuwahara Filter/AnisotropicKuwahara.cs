@@ -16,6 +16,9 @@ public class AnisotropicKuwahara : MonoBehaviour {
     [Range(0.01f, 2.0f)]
     public float zeroCrossing = 0.58f;
 
+    [Range(1, 4)]
+    public int passes = 1;
+
     private Material kuwaharaMat;
 
     void OnEnable() {
@@ -39,12 +42,27 @@ public class AnisotropicKuwahara : MonoBehaviour {
         Graphics.Blit(eigenvectors1, eigenvectors2, kuwaharaMat, 2);
         kuwaharaMat.SetTexture("_TFM", eigenvectors2);
 
+        RenderTexture[] kuwaharaPasses = new RenderTexture[passes];
+
+        for (int i = 0; i < passes; ++i) {
+            kuwaharaPasses[i] = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        }
+
+        Graphics.Blit(source, kuwaharaPasses[0], kuwaharaMat, 3);
+
+        for (int i = 1; i < passes; ++i) {
+            Graphics.Blit(kuwaharaPasses[i - 1], kuwaharaPasses[i], kuwaharaMat, 3);
+        }
+
         //Graphics.Blit(structureTensor, destination);
-        Graphics.Blit(source, destination, kuwaharaMat, 3);
+        Graphics.Blit(kuwaharaPasses[passes - 1], destination);
 
         RenderTexture.ReleaseTemporary(structureTensor);
         RenderTexture.ReleaseTemporary(eigenvectors1);
         RenderTexture.ReleaseTemporary(eigenvectors2);
+        for (int i = 0; i < passes; ++i) {
+            RenderTexture.ReleaseTemporary(kuwaharaPasses[i]);
+        }
     }
 
     void OnDisable() {

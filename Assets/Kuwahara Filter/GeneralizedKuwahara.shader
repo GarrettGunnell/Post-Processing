@@ -109,6 +109,7 @@ Shader "Hidden/GeneralizedKuwahara" {
                     for (int y = -(_KernelSize / 2); y <= (_KernelSize / 2); ++y) {
                         float2 v = 0.5f * float2(x, y) / float((_KernelSize / 2));
                         float3 c = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy).rgb;
+                        c = saturate(c);
                         for (k = 0; k < _N; ++k) {
                             float w = tex2D(_K0, 0.5f + v).x;
 
@@ -131,7 +132,7 @@ Shader "Hidden/GeneralizedKuwahara" {
                     output += float4(m[k].rgb * w, w);
                 }
 
-                return output / output.w;
+                return saturate(output / output.w);
             }
             ENDCG
         }
