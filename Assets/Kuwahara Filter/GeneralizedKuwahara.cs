@@ -12,6 +12,13 @@ public class GeneralizedKuwahara : MonoBehaviour {
     [Range(1.0f, 100.0f)]
     public float hardness = 8;
     
+    [Range(0.01f, 2.0f)]
+    public float zeroCrossing = 0.58f;
+
+    public bool useZeta = false;
+    [Range(0.01f, 3.0f)]
+    public float zeta = 1.0f;
+    
     [Range(1, 4)]
     public int passes = 1;
 
@@ -39,6 +46,8 @@ public class GeneralizedKuwahara : MonoBehaviour {
         kuwaharaMat.SetFloat("_Q", sharpness);
         kuwaharaMat.SetFloat("_Hardness", hardness);
         kuwaharaMat.SetTexture("_K0", weights2);
+        kuwaharaMat.SetFloat("_ZeroCrossing", zeroCrossing);
+        kuwaharaMat.SetFloat("_Zeta", useZeta ? zeta : 2.0f / (kernelSize / 2.0f));
         
         RenderTexture[] kuwaharaPasses = new RenderTexture[passes];
 

@@ -31,7 +31,7 @@ Shader "Hidden/GeneralizedKuwahara" {
         sampler2D _MainTex, _K0;
         float4 _MainTex_TexelSize;
         int _KernelSize, _N, _Size;
-        float _Hardness, _Q;
+        float _Hardness, _Q, _ZeroCrossing, _Zeta;
 
         float gaussian(float sigma, float2 pos) {
             return (1.0f / (2.0f * PI * sigma * sigma)) * exp(-((pos.x * pos.x + pos.y * pos.y) / (2.0f * sigma * sigma)));
@@ -96,27 +96,68 @@ Shader "Hidden/GeneralizedKuwahara" {
                 float4 m[8];
                 float3 s[8];
 
+                int kernelRadius = _KernelSize / 2;
+
+                //float zeta = 2.0f / (kernelRadius);
+                float zeta = _Zeta;
+
+                float zeroCross = _ZeroCrossing;
+                float sinZeroCross = sin(zeroCross);
+                float eta = (zeta + cos(zeroCross)) / (sinZeroCross * sinZeroCross);
+
                 for (k = 0; k < _N; ++k) {
                     m[k] = 0.0f;
                     s[k] = 0.0f;
                 }
 
-                float piN = 2.0f * PI / float(_N);
-                float2x2 X = {cos(piN), sin(piN), 
-                             -sin(piN), cos(piN)};
-
-                for (int x = -(_KernelSize / 2); x <= (_KernelSize / 2); ++x) {
-                    for (int y = -(_KernelSize / 2); y <= (_KernelSize / 2); ++y) {
-                        float2 v = 0.5f * float2(x, y) / float((_KernelSize / 2));
+                [loop]
+                for (int y = -kernelRadius; y <= kernelRadius; ++y) {
+                    [loop]
+                    for (int x = -kernelRadius; x <= kernelRadius; ++x) {
+                        float2 v = float2(x, y) / kernelRadius;
                         float3 c = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy).rgb;
                         c = saturate(c);
-                        for (k = 0; k < _N; ++k) {
-                            float w = tex2D(_K0, 0.5f + v).x;
-
-                            m[k] += float4(c * w, w);
-                            s[k] += c * c * w;
-
-                            v = mul(X, v);
+                        float sum = 0;
+                        float w[8];
+                        float z, vxx, vyy;
+                        
+                        /* Calculate Polynomial Weights */
+                        vxx = zeta - eta * v.x * v.x;
+                        vyy = zeta - eta * v.y * v.y;
+                        z = max(0, v.y + vxx); 
+                        w[0] = z * z;
+                        sum += w[0];
+                        z = max(0, -v.x + vyy); 
+                        w[2] = z * z;
+                        sum += w[2];
+                        z = max(0, -v.y + vxx); 
+                        w[4] = z * z;
+                        sum += w[4];
+                        z = max(0, v.x + vyy); 
+                        w[6] = z * z;
+                        sum += w[6];
+                        v = sqrt(2.0f) / 2.0f * float2(v.x - v.y, v.x + v.y);
+                        vxx = zeta - eta * v.x * v.x;
+                        vyy = zeta - eta * v.y * v.y;
+                        z = max(0, v.y + vxx); 
+                        w[1] = z * z;
+                        sum += w[1];
+                        z = max(0, -v.x + vyy); 
+                        w[3] = z * z;
+                        sum += w[3];
+                        z = max(0, -v.y + vxx); 
+                        w[5] = z * z;
+                        sum += w[5];
+                        z = max(0, v.x + vyy); 
+                        w[7] = z * z;
+                        sum += w[7];
+                        
+                        float g = exp(-3.125f * dot(v,v)) / sum;
+                        
+                        for (int k = 0; k < 8; ++k) {
+                            float wk = w[k] * g;
+                            m[k] += float4(c * wk, wk);
+                            s[k] += c * c * wk;
                         }
                     }
                 }

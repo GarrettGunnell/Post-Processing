@@ -37,7 +37,7 @@ public class AnisotropicKuwahara : MonoBehaviour {
         kuwaharaMat.SetFloat("_Hardness", hardness);
         kuwaharaMat.SetFloat("_Alpha", alpha);
         kuwaharaMat.SetFloat("_ZeroCrossing", zeroCrossing);
-        kuwaharaMat.SetFloat("_Zeta", useZeta ? zeta : 2.0f / (float)kernelSize);
+        kuwaharaMat.SetFloat("_Zeta", useZeta ? zeta : 2.0f / 2.0f / (kernelSize / 2.0f));
 
         var structureTensor = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
         Graphics.Blit(source, structureTensor, kuwaharaMat, 0);
