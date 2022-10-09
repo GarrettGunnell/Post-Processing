@@ -33,59 +33,8 @@ Shader "Hidden/GeneralizedKuwahara" {
         int _KernelSize, _N, _Size;
         float _Hardness, _Q, _ZeroCrossing, _Zeta;
 
-        float gaussian(float sigma, float2 pos) {
-            return (1.0f / (2.0f * PI * sigma * sigma)) * exp(-((pos.x * pos.x + pos.y * pos.y) / (2.0f * sigma * sigma)));
-        }
-
         ENDCG
-
-        // Pre Compute Weights
-        // Calculate Section
-        Pass {
-            CGPROGRAM
-            #pragma vertex vp
-            #pragma fragment fp
-
-            float4 fp(v2f i) : SV_Target {
-                float2 pos = i.uv - 0.5f;
-                float phi = atan2(pos.y, pos.x);
-                int Xk = (-PI / _N) < phi && phi <= (PI / _N);
-
-                return dot(pos, pos) <= 0.25f ? Xk : 0;
-            }
-            ENDCG
-        }
-
-        // Gaussian Filter Section
-        Pass {
-            CGPROGRAM
-            #pragma vertex vp
-            #pragma fragment fp
-
-            float4 fp(v2f i) : SV_Target {
-                // Calculated from the resolution of the gaussian weight texture, anything beyond 32x32 seems to make no difference so it is hard coded
-                float sigmaR = 0.5f * ((32.0f) * 0.5f);
-                float sigmaS = 0.33f * sigmaR;
-
-                float4 col = 0;
-                float kernelSum = 0.0f;
-                for (int x = -floor(sigmaS); x <= floor(sigmaS); ++x) {
-                    for (int y = -floor(sigmaS); y <= floor(sigmaS); ++y) {
-                        float4 c = tex2D(_MainTex, i.uv + float2(x, y) * _MainTex_TexelSize.xy);
-                        float gauss = gaussian(sigmaS, float2(x, y));
-
-                        col += c * gauss;
-                        kernelSum += gauss;
-                    }
-                }
-
-                float4 output = (col / kernelSum) * gaussian(sigmaR, (i.uv - 0.5f) * sigmaR * 5);
-
-                return output;
-            }
-            ENDCG
-        }
-
+        
         Pass {
             CGPROGRAM
             #pragma vertex vp
