@@ -145,7 +145,7 @@ MonoBehaviour:
   m_MinSize: {x: 275, y: 121}
   m_MaxSize: {x: 4000, y: 4021}
   vertical: 0
-  controlID: 61
+  controlID: 106
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -195,7 +195,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 121}
   m_MaxSize: {x: 4000, y: 4021}
   vertical: 0
-  controlID: 97
+  controlID: 82
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -319,7 +319,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 100}
   m_MaxSize: {x: 8096, y: 8096}
   vertical: 0
-  controlID: 70
+  controlID: 59
 --- !u!114 &14
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -403,7 +403,7 @@ MonoBehaviour:
     m_ControlHash: 1412526313
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 1085
+  m_LastVerticalScrollValue: 162
   m_GlobalObjectId: 
   m_InspectorMode: 0
   m_LockTracker:
@@ -440,8 +440,8 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 3afbffff
-      m_LastClickedID: -1222
+      m_SelectedIDs: fa580000
+      m_LastClickedID: 22778
       m_ExpandedIDs: 3cfbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
@@ -602,7 +602,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 23}
+    m_ScrollPosition: {x: 0, y: 0}
     m_GridSize: 16
   m_SkipHiddenPackages: 0
   m_DirectoriesAreaWidth: 160.5
@@ -648,7 +648,7 @@ MonoBehaviour:
   m_UseMipMap: 0
   m_VSyncEnabled: 0
   m_Gizmos: 0
-  m_Stats: 1
+  m_Stats: 0
   m_SelectedSizes: 0e000000000000000000000000000000000000000000000000000000000000000000000000000000
   m_ZoomArea:
     m_HRangeLocked: 0
@@ -665,7 +665,7 @@ MonoBehaviour:
     m_VAllowExceedBaseRangeMax: 1
     m_ScaleWithWindow: 0
     m_HSlider: 0
-    m_VSlider: 0
+    m_VSlider: 1
     m_IgnoreScrollWheelUntilClicked: 0
     m_EnableMouseInput: 1
     m_EnableSliderZoomHorizontal: 0
@@ -678,18 +678,18 @@ MonoBehaviour:
       y: 21
       width: 1920
       height: 905
-    m_Scale: {x: 1, y: 1}
-    m_Translation: {x: 960, y: 452.5}
+    m_Scale: {x: 2, y: 2}
+    m_Translation: {x: 960, y: 452.50015}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -960
-      y: -452.5
-      width: 1920
-      height: 905
+      x: -480
+      y: -226.25008
+      width: 960
+      height: 452.5
     m_MinimalGUI: 1
   m_defaultScale: 1
   m_LastWindowPixelSize: {x: 1920, y: 926}

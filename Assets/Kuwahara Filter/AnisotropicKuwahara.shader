@@ -31,7 +31,7 @@ Shader "Hidden/AnisotropicKuwahara" {
         sampler2D _MainTex, _TFM;
         float4 _MainTex_TexelSize;
         int _KernelSize, _N, _Size;
-        float _Hardness, _Q, _Alpha, _ZeroCrossing;
+        float _Hardness, _Q, _Alpha, _ZeroCrossing, _Zeta;
 
         float gaussian(float sigma, float pos) {
             return (1.0f / sqrt(2.0f * PI * sigma * sigma)) * exp(-(pos * pos) / (2.0f * sigma * sigma));
@@ -142,8 +142,10 @@ Shader "Hidden/AnisotropicKuwahara" {
             float4 fp(v2f i) : SV_Target {
                 float alpha = _Alpha;
                 float4 t = tex2D(_TFM, i.uv);
-                float a = float((_KernelSize / 2.0f)) * clamp((alpha + t.w) / alpha, 0.1f, 2.0f);
-                float b = float((_KernelSize / 2.0f)) * clamp(alpha / (alpha + t.w), 0.1f, 2.0f);
+
+                int kernelRadius = _KernelSize / 2;
+                float a = float((kernelRadius)) * clamp((alpha + t.w) / alpha, 0.1f, 2.0f);
+                float b = float((kernelRadius)) * clamp(alpha / (alpha + t.w), 0.1f, 2.0f);
                 
                 float cos_phi = cos(t.z);
                 float sin_phi = sin(t.z);
@@ -159,7 +161,8 @@ Shader "Hidden/AnisotropicKuwahara" {
                 int max_x = int(sqrt(a * a * cos_phi * cos_phi + b * b * sin_phi * sin_phi));
                 int max_y = int(sqrt(a * a * sin_phi * sin_phi + b * b * cos_phi * cos_phi));
 
-                float zeta = 2.0f / (_KernelSize / 2);
+                //float zeta = 2.0f / (kernelRadius);
+                float zeta = _Zeta;
 
                 float zeroCross = _ZeroCrossing;
                 float sinZeroCross = sin(zeroCross);

@@ -16,6 +16,10 @@ public class AnisotropicKuwahara : MonoBehaviour {
     [Range(0.01f, 2.0f)]
     public float zeroCrossing = 0.58f;
 
+    public bool useZeta = false;
+    [Range(0.01f, 3.0f)]
+    public float zeta = 1.0f;
+
     [Range(1, 4)]
     public int passes = 1;
 
@@ -33,6 +37,7 @@ public class AnisotropicKuwahara : MonoBehaviour {
         kuwaharaMat.SetFloat("_Hardness", hardness);
         kuwaharaMat.SetFloat("_Alpha", alpha);
         kuwaharaMat.SetFloat("_ZeroCrossing", zeroCrossing);
+        kuwaharaMat.SetFloat("_Zeta", useZeta ? zeta : 2.0f / (float)kernelSize);
 
         var structureTensor = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
         Graphics.Blit(source, structureTensor, kuwaharaMat, 0);
