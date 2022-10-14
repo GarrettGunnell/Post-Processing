@@ -10,9 +10,13 @@ public class SharpnessDispatcher : MonoBehaviour {
 
     private Material sharpnessMat;
     
-    void Start() {
-        sharpnessMat ??= new Material(sharpnessShader);
+    void OnEnable() {
+        sharpnessMat = new Material(sharpnessShader);
         sharpnessMat.hideFlags = HideFlags.HideAndDontSave;
+    }
+
+    void OnDisable() {
+        sharpnessMat = null;
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {

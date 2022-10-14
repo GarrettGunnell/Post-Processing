@@ -25,9 +25,13 @@ public class Ditherer : MonoBehaviour {
 
     private Material ditherMat;
     
-    void Start() {
-        ditherMat ??= new Material(ditherShader);
+    void OnEnable() {
+        ditherMat = new Material(ditherShader);
         ditherMat.hideFlags = HideFlags.HideAndDontSave;
+    }
+
+    void OnDisable() {
+        ditherMat = null;
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
