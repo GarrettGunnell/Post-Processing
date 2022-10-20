@@ -33,8 +33,10 @@ Shader "Hidden/Zoom" {
             SamplerState point_clamp_sampler, linear_clamp_sampler;
             float4 _MainTex_TexelSize;
             float4 _Offset;
-            float _Zoom;
+            float _Zoom, _Rotation;
             int _ZoomMode;
+
+            #define PI 3.14159265358979323846f
 
             float4 texture2DAA(float2 uv) {
                 float2 uv_texspace = uv * _MainTex_TexelSize.zw;
@@ -48,6 +50,13 @@ Shader "Hidden/Zoom" {
                 float2 zoomUV = i.uv * 2 - 1;
                 zoomUV += float2(-_Offset.x, _Offset.y) * 2;
                 zoomUV *= _Zoom;
+
+                float radians = _Rotation * PI / 180.0f;
+                float2x2 R = {
+                    cos(radians), -sin(radians),
+                    sin(radians), cos(radians)
+                };
+                zoomUV = mul(R, zoomUV);
                 zoomUV = zoomUV / 2 + 0.5f;
                 
                 if (_ZoomMode == 0)

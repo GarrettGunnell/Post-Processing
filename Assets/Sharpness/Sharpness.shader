@@ -34,7 +34,7 @@ Shader "Hidden/Sharpness" {
             float _Amount;
 
             float4 fp(v2f i) : SV_Target {
-                float4 col = tex2D(_MainTex, i.uv);
+                float4 col = saturate(tex2D(_MainTex, i.uv));
 
                 float neighbor = _Amount * -1;
                 float center = _Amount * 4 + 1;
@@ -46,7 +46,7 @@ Shader "Hidden/Sharpness" {
 
                 float4 output = n * neighbor + e * neighbor + col * center + s * neighbor + w * neighbor;
 
-                return output;
+                return saturate(output);
             }
             ENDCG
         }

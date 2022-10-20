@@ -16,6 +16,9 @@ public class Zoom : MonoBehaviour {
 
     public Vector2 offset;
 
+    [Range(-180.0f, 180.0f)]
+    public float rotation = 0.0f;
+
     private Material zoomMat;
     
     void OnEnable() {
@@ -29,6 +32,7 @@ public class Zoom : MonoBehaviour {
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
         zoomMat.SetFloat("_Zoom", zoom);
+        zoomMat.SetFloat("_Rotation", rotation);
         zoomMat.SetInt("_ZoomMode", (int)zoomMode);
         zoomMat.SetVector("_Offset", offset);
         

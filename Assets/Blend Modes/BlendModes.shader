@@ -68,7 +68,7 @@ Shader "Hidden/BlendModes" {
                 float4 a = tex2D(_MainTex, i.uv);
                 float4 b = GetBlendLayer(i.uv);
 
-                return float4(lerp(a.rgb, a.rgb + b.rgb, _Strength), a.a);
+                return saturate(float4(lerp(a.rgb, a.rgb + b.rgb, _Strength), a.a));
             }
             ENDCG
         }
@@ -83,7 +83,7 @@ Shader "Hidden/BlendModes" {
                 float4 a = tex2D(_MainTex, i.uv);
                 float4 b = GetBlendLayer(i.uv);
 
-                return float4(lerp(a.rgb, a.rgb - b.rgb, _Strength), a.a);
+                return saturate(float4(lerp(a.rgb, a.rgb - b.rgb, _Strength), a.a));
             }
             ENDCG
         }
@@ -98,7 +98,7 @@ Shader "Hidden/BlendModes" {
                 float4 a = tex2D(_MainTex, i.uv);
                 float4 b = GetBlendLayer(i.uv);
 
-                return float4(lerp(a.rgb, a.rgb * b.rgb, _Strength), a.a);
+                return saturate(float4(lerp(a.rgb, a.rgb * b.rgb, _Strength), a.a));
             }
             ENDCG
         }
@@ -115,7 +115,7 @@ Shader "Hidden/BlendModes" {
 
                 float3 blended = 1.0f - (1.0f - a.rgb) * (1.0f - b.rgb);
 
-                return float4(lerp(a.rgb, blended, _Strength), a.a);
+                return saturate(float4(lerp(a.rgb, blended, _Strength), a.a));
             }
             ENDCG
         }
@@ -137,7 +137,7 @@ Shader "Hidden/BlendModes" {
                 else
                     blended = 1.0f - 2.0f * (1.0f - a.rgb) * (1.0f - b.rgb);
 
-                return float4(lerp(a.rgb, blended, _Strength), a.a);
+                return saturate(float4(lerp(a.rgb, blended, _Strength), a.a));
             }
             ENDCG
         }
@@ -159,7 +159,7 @@ Shader "Hidden/BlendModes" {
                 else
                     blended = 2.0f * a * (1.0f - b) + sqrt(a) * (2.0f * b - 1.0f);
 
-                return float4(lerp(a.rgb, blended.rgb, _Strength), a.a);
+                return saturate(float4(lerp(a.rgb, blended.rgb, _Strength), a.a));
             }
             ENDCG
         }
@@ -178,7 +178,7 @@ Shader "Hidden/BlendModes" {
                 float4 blended = a / (1.0f - b);
                 blended = saturate(blended);
 
-                return float4(lerp(a.rgb, blended.rgb, _Strength), a.a);
+                return saturate(float4(lerp(a.rgb, blended.rgb, _Strength), a.a));
             }
             ENDCG
         }
@@ -197,7 +197,7 @@ Shader "Hidden/BlendModes" {
                 float4 blended = 1.0f - ((1.0f - a) / b);
                 blended = saturate(blended);
 
-                return float4(lerp(a.rgb, blended.rgb, _Strength), a.a);
+                return saturate(float4(lerp(a.rgb, blended.rgb, _Strength), a.a));
             }
             ENDCG
         }
@@ -222,7 +222,7 @@ Shader "Hidden/BlendModes" {
                     blended = a / (2 * (1.0f - b));
                 }
 
-                return float4(lerp(a.rgb, blended, _Strength), a.a);
+                return saturate(float4(lerp(a.rgb, blended, _Strength), a.a));
             }
             ENDCG
         }
