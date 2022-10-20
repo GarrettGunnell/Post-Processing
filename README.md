@@ -57,6 +57,9 @@ These effects are modular only for ease of experimentation and finding what look
 * **Kuwahara Filtering**
 * * Basic Kuwahara
 * * Generalized Kuwahara
+* * Anisotropic Kuwahara w/ Polynomial Weighting
+* **Zoom**
+* * Anti Aliased Pixel Art Upscaler
 
 # Examples
 
