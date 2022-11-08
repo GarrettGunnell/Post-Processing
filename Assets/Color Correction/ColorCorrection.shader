@@ -31,7 +31,8 @@ Shader "Hidden/ColorCorrection" {
 
             sampler2D _MainTex;
             float4 _ColorFilter;
-            float _Exposure, _Temperature, _Tint, _Contrast, _Brightness, _Saturation, _Gamma;
+            float3 _Exposure, _Contrast, _Brightness, _Saturation, _MidPoint;
+            float _Temperature, _Tint;
 
             float luminance(float3 color) {
                 return dot(color, float3(0.299f, 0.587f, 0.114f));
@@ -76,24 +77,16 @@ Shader "Hidden/ColorCorrection" {
             }
 
             float4 fp(v2f i) : SV_Target {
-                float4 col = tex2D(_MainTex, i.uv);
+                float4 sample = tex2D(_MainTex, i.uv);
+                float3 col = sample.rgb;
 
-                col.rgb *= _Exposure;
-                col = max(0.0f, col);
+                col = max(0.0f, col * _Exposure);
+                col = max(0.0f, WhiteBalance(col, _Temperature, _Tint));
+                col = max(0.0f, _Contrast * (col - _MidPoint) + _MidPoint + _Brightness);
+                col = max(0.0f, col * _ColorFilter);
+                col = max(0.0f, lerp(luminance(col), col, _Saturation));
 
-                col.rgb = WhiteBalance(col.rgb, _Temperature, _Tint);
-                col = max(0.0f, col);
-
-                col.rgb = _Contrast * (col.rgb - 0.5f) + 0.5f + _Brightness;
-                col = max(0.0f, col);
-
-                col.rgb *= _ColorFilter.rgb;
-                col = max(0.0f, col);
-
-                col.rgb = lerp(luminance(col.rgb), col.rgb, _Saturation);
-                col = max(0.0f, col);
-
-                return col;
+                return float4(col, sample.a);
             }
             ENDCG
         }

@@ -6,23 +6,21 @@ using UnityEngine;
 public class ColorCorrection : MonoBehaviour {
     public Shader postProcessingShader;
 
-    [Range(0.0f, 10.0f)]
-    public float exposure = 1.0f;
+    public Vector3 exposure = new Vector3(1.0f, 1.0f, 1.0f);
 
     [Range(-100.0f, 100.0f)]
     public float temperature, tint;
 
-    [Range(0.0f, 2.0f)]
-    public float contrast;
-    
-    [Range(-1.0f, 1.0f)]
-    public float brightness;
+    public Vector3 contrast = new Vector3(1.0f, 1.0f, 1.0f);
+
+    public Vector3 linearMidPoint = new Vector3(0.5f, 0.5f, 0.5f);
+
+    public Vector3 brightness = new Vector3(0.0f, 0.0f, 0.0f);
 
     [ColorUsageAttribute(false, true)]
     public Color colorFilter;
-    
-    [Range(0.0f, 5.0f)]
-    public float saturation;
+
+    public Vector3 saturation = new Vector3(1.0f, 1.0f, 1.0f);
     
     private Material postProcessMat;
 
@@ -32,13 +30,15 @@ public class ColorCorrection : MonoBehaviour {
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
-        postProcessMat.SetFloat("_Exposure", exposure);
+        postProcessMat.SetVector("_Exposure", exposure);
+        postProcessMat.SetVector("_Contrast", contrast);
+        postProcessMat.SetVector("_MidPoint", linearMidPoint);
+        postProcessMat.SetVector("_Brightness", brightness);
+        postProcessMat.SetVector("_ColorFilter", colorFilter);
+        postProcessMat.SetVector("_Saturation", saturation);
         postProcessMat.SetFloat("_Temperature", temperature / 100.0f);
         postProcessMat.SetFloat("_Tint", tint / 100.0f);
-        postProcessMat.SetFloat("_Contrast", contrast);
-        postProcessMat.SetFloat("_Brightness", brightness);
-        postProcessMat.SetVector("_ColorFilter", colorFilter);
-        postProcessMat.SetFloat("_Saturation", saturation);
+
         Graphics.Blit(source, destination, postProcessMat);
     }
 }
