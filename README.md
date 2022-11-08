@@ -219,6 +219,17 @@ Riot Games is aware of this issue and provides a color blind mode in the options
 
 ![league2](./examples/league2.png)
 
+# Kuwahara Filter
+
+## Basic
+![kuwabasic](./examples/kuwaharabasic.png)
+
+## Generalized
+![kuwageneralized](./examples/kuwaharageneralized.png)
+
+## Anisotropic
+![kuwaanisotropic](./examples/kuwaharaanisotropic.png)
+
 # References
 
 https://catlikecoding.com/unity/tutorials/custom-srp/color-grading/ </br>
