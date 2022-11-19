@@ -48,7 +48,7 @@ Shader "Hidden/Zoom" {
 
             float4 fp(v2f i) : SV_Target {
                 float2 zoomUV = i.uv * 2 - 1;
-                zoomUV += float2(-_Offset.x, _Offset.y) * 2;
+                zoomUV += float2(_Offset.x, _Offset.y);
                 zoomUV *= _Zoom;
 
                 float radians = _Rotation * PI / 180.0f;
@@ -57,7 +57,7 @@ Shader "Hidden/Zoom" {
                     sin(radians), cos(radians)
                 };
                 zoomUV = mul(R, zoomUV);
-                zoomUV = zoomUV / 2 + 0.5f;
+                zoomUV = zoomUV * 0.5f + 0.5f;
                 
                 if (_ZoomMode == 0)
                     return _MainTex.Sample(point_clamp_sampler, zoomUV);
