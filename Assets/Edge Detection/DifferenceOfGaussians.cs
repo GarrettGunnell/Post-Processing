@@ -31,29 +31,20 @@ public class DifferenceOfGaussians : MonoBehaviour {
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
         dogMat.SetInt("_GaussianKernelSize", gaussianKernelSize);
         dogMat.SetFloat("_Sigma", stdev);
+        dogMat.SetFloat("_K", stdevScale);
         dogMat.SetFloat("_Threshold", threshold);
         dogMat.SetInt("_Thresholding", thresholding ? 1 : 0);
         dogMat.SetInt("_Invert", invert ? 1 : 0);
 
-        var gaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.R16);
+        var gaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.RG32);
         Graphics.Blit(source, gaussian1, dogMat, 0);
-        var gaussian2 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.R16);
+        var gaussian2 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.RG32);
         Graphics.Blit(gaussian1, gaussian2, dogMat, 1);
 
-        dogMat.SetFloat("_Sigma", stdev * stdevScale);
-
-        var kgaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.R16);
-        Graphics.Blit(source, kgaussian1, dogMat, 0);
-        var kgaussian2 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.R16);
-        Graphics.Blit(kgaussian1, kgaussian2, dogMat, 1);
-
-        dogMat.SetTexture("_kGaussianTex", kgaussian2);
         dogMat.SetTexture("_GaussianTex", gaussian2);
 
         Graphics.Blit(source, destination, dogMat, 2);
         RenderTexture.ReleaseTemporary(gaussian1);
         RenderTexture.ReleaseTemporary(gaussian2);
-        RenderTexture.ReleaseTemporary(kgaussian1);
-        RenderTexture.ReleaseTemporary(kgaussian2);
     }
 }
