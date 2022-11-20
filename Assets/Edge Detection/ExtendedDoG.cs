@@ -8,16 +8,22 @@ public class ExtendedDoG : MonoBehaviour {
     [Range(1, 10)]
     public int gaussianKernelSize = 5;
 
-    [Range(0.1f, 5.0f)]
+    [Range(0.0f, 5.0f)]
     public float stdev = 2.0f;
 
     [Range(0.1f, 5.0f)]
     public float stdevScale = 1.6f;
 
+    [Range(0.0f, 100.0f)]
+    public float Sharpness = 1.0f;
+
     public bool thresholding = true;
 
-    [Range(0.0f, 0.1f)]
+    [Range(0.0f, 1.0f)]
     public float threshold = 0.005f;
+
+    [Range(0.0f, 100.0f)]
+    public float softThreshold = 1.0f;
 
     public bool invert = false;
 
@@ -32,6 +38,8 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetInt("_GaussianKernelSize", gaussianKernelSize);
         dogMat.SetFloat("_Sigma", stdev);
         dogMat.SetFloat("_K", stdevScale);
+        dogMat.SetFloat("_Tau", Sharpness);
+        dogMat.SetFloat("_Phi", softThreshold);
         dogMat.SetFloat("_Threshold", threshold);
         dogMat.SetInt("_Thresholding", thresholding ? 1 : 0);
         dogMat.SetInt("_Invert", invert ? 1 : 0);
