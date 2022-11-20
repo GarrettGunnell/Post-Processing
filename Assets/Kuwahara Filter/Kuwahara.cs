@@ -7,6 +7,19 @@ public class Kuwahara : MonoBehaviour {
     
     [Range(1, 20)]
     public int kernelSize = 1;
+
+    public bool animateKernelSize = false;
+
+    [Range(1, 20)]
+    public int minKernelSize = 1;
+
+    [Range(0.1f, 5.0f)]
+    public float sizeAnimationSpeed = 1.0f;
+    
+    [Range(0.0f, 30.0f)]
+    public float noiseFrequency = 10.0f;
+
+    public bool animateKernelOrigin = false;
     
     [Range(1, 4)]
     public int passes = 1;
@@ -19,7 +32,12 @@ public class Kuwahara : MonoBehaviour {
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
-        kuwaharaMat.SetFloat("_KernelSize", kernelSize);
+        kuwaharaMat.SetInt("_KernelSize", kernelSize);
+        kuwaharaMat.SetInt("_MinKernelSize", minKernelSize);
+        kuwaharaMat.SetInt("_AnimateSize", animateKernelSize ? 1 : 0);
+        kuwaharaMat.SetFloat("_SizeAnimationSpeed", sizeAnimationSpeed);
+        kuwaharaMat.SetFloat("_NoiseFrequency", noiseFrequency);
+        kuwaharaMat.SetInt("_AnimateOrigin", animateKernelOrigin ? 1 : 0);
 
         RenderTexture[] kuwaharaPasses = new RenderTexture[passes];
 
