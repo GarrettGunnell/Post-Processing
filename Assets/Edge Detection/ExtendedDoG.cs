@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ExtendedDoG : MonoBehaviour {
-    public Shader ExtendedDoG;
+    public Shader extendedDoG;
 
     [Range(1, 10)]
     public int gaussianKernelSize = 5;
@@ -24,7 +24,7 @@ public class ExtendedDoG : MonoBehaviour {
     private Material dogMat;
     
     void OnEnable() {
-        dogMat = new Material(ExtendedDoG);
+        dogMat = new Material(extendedDoG);
         dogMat.hideFlags = HideFlags.HideAndDontSave;
     }
 
