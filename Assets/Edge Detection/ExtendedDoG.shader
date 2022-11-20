@@ -41,6 +41,40 @@ Shader "Hidden/ExtendedDoG" {
             return dot(color, float3(0.299f, 0.587f, 0.114f));
         }
 
+        // Color conversions from https://gist.github.com/mattatz/44f081cac87e2f7c8980
+        float3 rgb2xyz(float3 c) {
+            float3 tmp;
+
+            tmp.x = (c.r > 0.04045) ? pow((c.r + 0.055) / 1.055, 2.4) : c.r / 12.92;
+            tmp.y = (c.g > 0.04045) ? pow((c.g + 0.055) / 1.055, 2.4) : c.g / 12.92,
+            tmp.z = (c.b > 0.04045) ? pow((c.b + 0.055) / 1.055, 2.4) : c.b / 12.92;
+            
+            const float3x3 mat = float3x3(
+                0.4124, 0.3576, 0.1805,
+                0.2126, 0.7152, 0.0722,
+                0.0193, 0.1192, 0.9505 
+            );
+
+            return 100.0 * mul(tmp, mat);
+        }
+
+        float3 xyz2lab(float3 c) {
+            float3 n = c / float3(95.047, 100, 108.883);
+            float3 v;
+
+            v.x = (n.x > 0.008856) ? pow(n.x, 1.0 / 3.0) : (7.787 * n.x) + (16.0 / 116.0);
+            v.y = (n.y > 0.008856) ? pow(n.y, 1.0 / 3.0) : (7.787 * n.y) + (16.0 / 116.0);
+            v.z = (n.z > 0.008856) ? pow(n.z, 1.0 / 3.0) : (7.787 * n.z) + (16.0 / 116.0);
+
+            return float3((116.0 * v.y) - 16.0, 500.0 * (v.x - v.y), 200.0 * (v.y - v.z));
+        }
+
+        float3 rgb2lab(float3 c) {
+            float3 lab = xyz2lab(rgb2xyz(c));
+
+            return float3(lab.x / 100.0f, 0.5 + 0.5 * (lab.y / 127.0), 0.5 + 0.5 * (lab.z / 127.0));
+        }
+
         ENDCG
 
         // Blur Pass 1
@@ -55,7 +89,7 @@ Shader "Hidden/ExtendedDoG" {
                 float kernelSum2 = 0.0f;
 
                 for (int x = -_GaussianKernelSize; x <= _GaussianKernelSize; ++x) {
-                    float c = luminance(tex2D(_MainTex, i.uv + float2(x, 0) * _MainTex_TexelSize.xy));
+                    float c = rgb2lab(saturate(tex2D(_MainTex, i.uv + float2(x, 0) * _MainTex_TexelSize.xy)).rgb).r;
                     float gauss1 = gaussian(_Sigma, x);
                     float gauss2 = gaussian(_Sigma * _K, x);
 
@@ -108,9 +142,7 @@ Shader "Hidden/ExtendedDoG" {
             float4 fp(v2f i) : SV_Target {
                 float2 G = tex2D(_GaussianTex, i.uv).rg;
 
-                float4 D = G.r - _Tau * G.g;
-
-                D = (1 + _Tau) * G.r - _Tau * G.g;
+                float4 D = (1 + _Tau) * (G.r * 100.0f) - _Tau * (G.g * 100.0f);
 
                 if (_Thresholding)
                     D = (D >= _Threshold) ? 1 : 1 + tanh(_Phi * (D - _Threshold));

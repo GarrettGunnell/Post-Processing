@@ -19,10 +19,10 @@ public class ExtendedDoG : MonoBehaviour {
 
     public bool thresholding = true;
 
-    [Range(0.0f, 1.0f)]
+    [Range(0.0f, 100.0f)]
     public float threshold = 0.005f;
 
-    [Range(0.0f, 100.0f)]
+    [Range(0.0f, 5.0f)]
     public float softThreshold = 1.0f;
 
     public bool invert = false;

@@ -24,7 +24,7 @@ public class ColorCorrection : MonoBehaviour {
     
     private Material postProcessMat;
 
-    void Start() {
+    void OnEnable() {
         postProcessMat ??= new Material(postProcessingShader);
         postProcessMat.hideFlags = HideFlags.HideAndDontSave;
     }
