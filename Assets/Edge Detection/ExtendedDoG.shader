@@ -28,10 +28,13 @@ Shader "Hidden/ExtendedDoG" {
 
         #define PI 3.14159265358979323846f
         
-        sampler2D _MainTex, _GaussianTex, _kGaussianTex, _TFM;
+        sampler2D _MainTex, _GaussianTex, _kGaussianTex;
+        Texture2D _TFM;
         float4 _MainTex_TexelSize;
-        int _Thresholding, _Invert;
+        int _Thresholding, _Invert, _CalcDiffBeforeConvolution;
         float _SigmaC, _SigmaE, _SigmaM, _Threshold, _Thresholds, _K, _Tau, _Phi;
+
+        SamplerState point_clamp_sampler;
         
         float gaussian(float sigma, float pos) {
             return (1.0f / sqrt(2.0f * PI * sigma * sigma)) * exp(-(pos * pos) / (2.0f * sigma * sigma));
@@ -185,7 +188,7 @@ Shader "Hidden/ExtendedDoG" {
 
             float4 fp(v2f i) : SV_Target {
 
-                float2 t = tex2D(_TFM, i.uv).xy;
+                float2 t = _TFM.Sample(point_clamp_sampler, i.uv).xy;
                 float2 n = float2(t.y, -t.x);
                 float2 nabs = abs(n);
                 float ds = 1.0 / ((nabs.x > nabs.y) ? nabs.x : nabs.y);
@@ -213,9 +216,7 @@ Shader "Hidden/ExtendedDoG" {
 
                 col /= kernelSum;
 
-                float4 D = (1 + _Tau) * (col.r * 100.0f) - _Tau * (col.g * 100.0f);
-
-                return D / 100.0f;
+                return float4(col, (1 + _Tau) * (col.r * 100.0f) - _Tau * (col.g * 100.0f), 1.0f);
             }
             ENDCG
         }
@@ -229,10 +230,10 @@ Shader "Hidden/ExtendedDoG" {
             float4 fp(v2f i) : SV_Target {
                 float kernelSize = _SigmaM * 2;
 
-                float H = tex2D(_MainTex, i.uv).r;
-                float w = 1.0f;
+                float2 G = 0.0f;
+                float2 w = 0.0f;
 
-                float2 v = tex2D(_TFM, i.uv).xy * _MainTex_TexelSize;
+                float2 v = _TFM.Sample(point_clamp_sampler, i.uv).xy * _MainTex_TexelSize;
 
                 float2 st0 = i.uv;
                 float2 v0 = v;
@@ -240,12 +241,24 @@ Shader "Hidden/ExtendedDoG" {
                 [loop]
                 for (int d = 0; d < kernelSize; ++d) {
                     st0 += v0;
-                    float gauss = gaussian(_SigmaM, d);
+                    float3 c = tex2D(_MainTex, st0).rgb;
+                    float gauss1 = gaussian(_SigmaM, d);
 
-                    H += gauss * tex2D(_MainTex, st0).r;
-                    w += gauss;
 
-                    v0 = tex2D(_TFM, st0).xy * _MainTex_TexelSize.xy;
+                    if (_CalcDiffBeforeConvolution) {
+                        G.r += gauss1 * c.b;
+                        w.x += gauss1;
+                    } else {
+                        float gauss2 = gaussian(_SigmaM * _K, d);
+
+                        G.r += gauss1 * c.r;
+                        w.x += gauss1;
+
+                        G.g += gauss2 * c.g;
+                        w.y += gauss2;
+                    }
+
+                    v0 = _TFM.Sample(point_clamp_sampler, st0).xy * _MainTex_TexelSize.xy;
                 }
 
                 float2 st1 = i.uv;
@@ -254,15 +267,34 @@ Shader "Hidden/ExtendedDoG" {
                 [loop]
                 for (int d = 0; d < kernelSize; ++d) {
                     st1 -= v1;
-                    float gauss = gaussian(_SigmaM, d);
+                    float3 c = tex2D(_MainTex, st1).rgb;
+                    float gauss1 = gaussian(_SigmaM, d);
 
-                    H += gauss * tex2D(_MainTex, st0).r;
-                    w += gauss;
 
-                    v1 = tex2D(_TFM, st1).xy * _MainTex_TexelSize.xy;
+                    if (_CalcDiffBeforeConvolution) {
+                        G.r += gauss1 * c.b;
+                        w.x += gauss1;
+                    } else {
+                        float gauss2 = gaussian(_SigmaM * _K, d);
+
+                        G.r += gauss1 * c.r;
+                        w.x += gauss1;
+
+                        G.g += gauss2 * c.g;
+                        w.y += gauss2;
+                    }
+
+                    v1 = _TFM.Sample(point_clamp_sampler, st1).xy * _MainTex_TexelSize.xy;
                 }
 
-                float D = (H / w) * 100.0f;
+                G /= w;
+
+                float4 D = 0.0f;
+                if (_CalcDiffBeforeConvolution) {
+                    D = G.x;
+                } else {
+                    D = (1 + _Tau) * (G.r * 100.0f) - _Tau * (G.g * 100.0f);
+                }
 
                 if (_Thresholding == 1) {
                     D = (D >= _Threshold) ? 1 : 1 + tanh(_Phi * (D - _Threshold));

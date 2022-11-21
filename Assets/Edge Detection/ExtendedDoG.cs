@@ -20,6 +20,8 @@ public class ExtendedDoG : MonoBehaviour {
     [Range(0.0f, 5.0f)]
     public float lineIntegralDeviation = 2.0f;
 
+    public bool calcDiffBeforeConvolution = true;
+
     public enum ThresholdMode {
         NoThreshold = 0,
         Tanh,
@@ -56,6 +58,7 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetFloat("_Thresholds", quantizerStep);
         dogMat.SetInt("_Thresholding", (int)thresholdMode);
         dogMat.SetInt("_Invert", invert ? 1 : 0);
+        dogMat.SetInt("_CalcDiffBeforeConvolution", calcDiffBeforeConvolution ? 1 : 0);
 
         var rgbToLab = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
         Graphics.Blit(source, rgbToLab, dogMat, 0);
@@ -67,7 +70,7 @@ public class ExtendedDoG : MonoBehaviour {
         Graphics.Blit(eigenvectors1, eigenvectors2, dogMat, 3);
         dogMat.SetTexture("_TFM", eigenvectors2);
 
-        var gaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.RG32);
+        var gaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
         Graphics.Blit(rgbToLab, gaussian1, dogMat, 4);
         var gaussian2 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
         Graphics.Blit(gaussian1, gaussian2, dogMat, 5);
