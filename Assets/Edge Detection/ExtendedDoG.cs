@@ -5,9 +5,6 @@ using UnityEngine;
 public class ExtendedDoG : MonoBehaviour {
     public Shader extendedDoG;
 
-    [Range(1, 10)]
-    public int gaussianKernelSize = 5;
-
     [Range(0.0f, 5.0f)]
     public float stdev = 2.0f;
 
@@ -35,7 +32,6 @@ public class ExtendedDoG : MonoBehaviour {
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
-        dogMat.SetInt("_GaussianKernelSize", gaussianKernelSize);
         dogMat.SetFloat("_Sigma", stdev);
         dogMat.SetFloat("_K", stdevScale);
         dogMat.SetFloat("_Tau", Sharpness);

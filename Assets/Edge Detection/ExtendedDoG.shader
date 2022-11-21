@@ -30,7 +30,7 @@ Shader "Hidden/ExtendedDoG" {
         
         sampler2D _MainTex, _GaussianTex, _kGaussianTex;
         float4 _MainTex_TexelSize;
-        int _GaussianKernelSize, _Thresholding, _Invert;
+        int _Thresholding, _Invert;
         float _Sigma, _Threshold, _K, _Tau, _Phi;
         
         float gaussian(float sigma, float pos) {
@@ -88,7 +88,9 @@ Shader "Hidden/ExtendedDoG" {
                 float kernelSum1 = 0.0f;
                 float kernelSum2 = 0.0f;
 
-                for (int x = -_GaussianKernelSize; x <= _GaussianKernelSize; ++x) {
+                int kernelSize = (_Sigma * 2 > 2) ? floor(_Sigma * 2) : 2;
+
+                for (int x = -kernelSize; x <= kernelSize; ++x) {
                     float c = rgb2lab(saturate(tex2D(_MainTex, i.uv + float2(x, 0) * _MainTex_TexelSize.xy)).rgb).r;
                     float gauss1 = gaussian(_Sigma, x);
                     float gauss2 = gaussian(_Sigma * _K, x);
@@ -116,7 +118,9 @@ Shader "Hidden/ExtendedDoG" {
                 float kernelSum1 = 0.0f;
                 float kernelSum2 = 0.0f;
 
-                for (int y = -_GaussianKernelSize; y <= _GaussianKernelSize; ++y) {
+                int kernelSize = (_Sigma * 2 > 2) ? floor(_Sigma * 2) : 2;
+
+                for (int y = -kernelSize; y <= kernelSize; ++y) {
                     float4 c = tex2D(_MainTex, i.uv + float2(0, y) * _MainTex_TexelSize.xy);
                     float gauss1 = gaussian(_Sigma, y);
                     float gauss2 = gaussian(_Sigma * _K, y);
