@@ -31,7 +31,7 @@ Shader "Hidden/ExtendedDoG" {
         sampler2D _MainTex, _GaussianTex, _kGaussianTex;
         float4 _MainTex_TexelSize;
         int _Thresholding, _Invert;
-        float _Sigma, _Threshold, _K, _Tau, _Phi;
+        float _Sigma, _Threshold, _Thresholds, _K, _Tau, _Phi;
         
         float gaussian(float sigma, float pos) {
             return (1.0f / sqrt(2.0f * PI * sigma * sigma)) * exp(-(pos * pos) / (2.0f * sigma * sigma));
@@ -148,8 +148,17 @@ Shader "Hidden/ExtendedDoG" {
 
                 float4 D = (1 + _Tau) * (G.r * 100.0f) - _Tau * (G.g * 100.0f);
 
-                if (_Thresholding)
+                if (_Thresholding == 1)
                     D = (D >= _Threshold) ? 1 : 1 + tanh(_Phi * (D - _Threshold));
+                else if (_Thresholding == 2) {
+                    float a = 1.0f / _Thresholds;
+                    float b = _Threshold / 100.0f;
+                    float x = D / 100.0f;
+
+                    D = (x >= b) ? 1 : a * floor((pow(x, _Phi) - (a * b / 2.0f)) / (a * b) + 0.5f);
+                } else {
+                    D /= 100.0f;
+                }
 
                 if (_Invert)
                     D = 1 - D;

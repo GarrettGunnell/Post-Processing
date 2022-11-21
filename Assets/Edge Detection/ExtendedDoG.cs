@@ -14,12 +14,19 @@ public class ExtendedDoG : MonoBehaviour {
     [Range(0.0f, 100.0f)]
     public float Sharpness = 1.0f;
 
-    public bool thresholding = true;
+    public enum ThresholdMode {
+        NoThreshold = 0,
+        Tanh,
+        Quantization
+    } public ThresholdMode thresholdMode;
+
+    [Range(1, 16)]
+    public int quantizerStep = 2;
 
     [Range(0.0f, 100.0f)]
-    public float threshold = 0.005f;
+    public float whitePoint = 50.0f;
 
-    [Range(0.0f, 5.0f)]
+    [Range(0.0f, 10.0f)]
     public float softThreshold = 1.0f;
 
     public bool invert = false;
@@ -36,8 +43,9 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetFloat("_K", stdevScale);
         dogMat.SetFloat("_Tau", Sharpness);
         dogMat.SetFloat("_Phi", softThreshold);
-        dogMat.SetFloat("_Threshold", threshold);
-        dogMat.SetInt("_Thresholding", thresholding ? 1 : 0);
+        dogMat.SetFloat("_Threshold", whitePoint);
+        dogMat.SetFloat("_Thresholds", quantizerStep);
+        dogMat.SetInt("_Thresholding", (int)thresholdMode);
         dogMat.SetInt("_Invert", invert ? 1 : 0);
 
         var gaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.RG32);
