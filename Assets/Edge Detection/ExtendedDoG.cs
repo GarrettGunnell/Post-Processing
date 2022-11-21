@@ -9,13 +9,16 @@ public class ExtendedDoG : MonoBehaviour {
     public float structureTensorDeviation = 2.0f;
 
     [Range(0.0f, 5.0f)]
-    public float stdev = 2.0f;
+    public float differenceOfGaussiansDeviation = 2.0f;
 
     [Range(0.1f, 5.0f)]
     public float stdevScale = 1.6f;
 
     [Range(0.0f, 100.0f)]
     public float Sharpness = 1.0f;
+
+    [Range(0.0f, 5.0f)]
+    public float lineIntegralDeviation = 2.0f;
 
     public enum ThresholdMode {
         NoThreshold = 0,
@@ -44,7 +47,8 @@ public class ExtendedDoG : MonoBehaviour {
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
         dogMat.SetFloat("_SigmaC", structureTensorDeviation);
-        dogMat.SetFloat("_Sigma", stdev);
+        dogMat.SetFloat("_SigmaE", differenceOfGaussiansDeviation);
+        dogMat.SetFloat("_SigmaM", lineIntegralDeviation);
         dogMat.SetFloat("_K", stdevScale);
         dogMat.SetFloat("_Tau", Sharpness);
         dogMat.SetFloat("_Phi", softThreshold);
@@ -65,13 +69,13 @@ public class ExtendedDoG : MonoBehaviour {
 
         var gaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.RG32);
         Graphics.Blit(rgbToLab, gaussian1, dogMat, 4);
-        var gaussian2 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.RG32);
+        var gaussian2 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
         Graphics.Blit(gaussian1, gaussian2, dogMat, 5);
 
         dogMat.SetTexture("_GaussianTex", gaussian2);
 
-        Graphics.Blit(source, destination, dogMat, 6);
-        //Graphics.Blit(eigenvectors2, destination);
+        //Graphics.Blit(source, destination, dogMat, 6);
+        Graphics.Blit(gaussian2, destination);
         RenderTexture.ReleaseTemporary(rgbToLab);
         RenderTexture.ReleaseTemporary(structureTensor);
         RenderTexture.ReleaseTemporary(eigenvectors1);

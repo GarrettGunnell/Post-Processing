@@ -25,8 +25,8 @@ public class Bloom : MonoBehaviour {
 
     private Material bloomMat;
 
-    void Start() {
-        bloomMat ??= new Material(bloomShader);
+    void OnEnable() {
+        bloomMat = new Material(bloomShader);
         bloomMat.hideFlags = HideFlags.HideAndDontSave;
     }
 

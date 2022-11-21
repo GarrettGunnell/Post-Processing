@@ -28,10 +28,10 @@ Shader "Hidden/ExtendedDoG" {
 
         #define PI 3.14159265358979323846f
         
-        sampler2D _MainTex, _GaussianTex, _kGaussianTex;
+        sampler2D _MainTex, _GaussianTex, _kGaussianTex, _TFM;
         float4 _MainTex_TexelSize;
         int _Thresholding, _Invert;
-        float _SigmaC, _Sigma, _Threshold, _Thresholds, _K, _Tau, _Phi;
+        float _SigmaC, _SigmaE, _SigmaM, _Threshold, _Thresholds, _K, _Tau, _Phi;
         
         float gaussian(float sigma, float pos) {
             return (1.0f / sqrt(2.0f * PI * sigma * sigma)) * exp(-(pos * pos) / (2.0f * sigma * sigma));
@@ -184,25 +184,38 @@ Shader "Hidden/ExtendedDoG" {
             #pragma fragment fp
 
             float4 fp(v2f i) : SV_Target {
-                float2 col = 0;
-                float kernelSum1 = 0.0f;
-                float kernelSum2 = 0.0f;
 
-                int kernelSize = (_Sigma * 2 > 2) ? floor(_Sigma * 2) : 2;
+                float2 t = tex2D(_TFM, i.uv).xy;
+                float2 n = float2(t.y, -t.x);
+                float2 nabs = abs(n);
+                float ds = 1.0 / ((nabs.x > nabs.y) ? nabs.x : nabs.y);
+                n *= _MainTex_TexelSize.xy;
 
-                for (int x = -kernelSize; x <= kernelSize; ++x) {
-                    float c = tex2D(_MainTex, i.uv + float2(x, 0) * _MainTex_TexelSize.xy).r;
-                    float gauss1 = gaussian(_Sigma, x);
-                    float gauss2 = gaussian(_Sigma * _K, x);
+                float2 col = tex2D(_MainTex, i.uv).xx;
+                float2 kernelSum = 1.0f;
 
-                    col.r += c * gauss1;
-                    kernelSum1 += gauss1;
+                int kernelSize = (_SigmaE * 2 > 1) ? floor(_SigmaE * 2) : 1;
 
-                    col.g += c * gauss2;
-                    kernelSum2 += gauss2;
+                [loop]
+                for (int x = ds; x <= kernelSize; ++x) {
+                    float gauss1 = gaussian(_SigmaE, x);
+                    float gauss2 = gaussian(_SigmaE * _K, x);
+
+                    float c1 = tex2D(_MainTex, i.uv - x * n).r;
+                    float c2 = tex2D(_MainTex, i.uv + x * n).r;
+
+                    col.r += (c1 + c2) * gauss1;
+                    kernelSum.x += 2.0f * gauss1;
+
+                    col.g += (c1 + c2) * gauss2;
+                    kernelSum.y +=  2.0f * gauss2;
                 }
 
-                return float4(col.r / kernelSum1, col.g / kernelSum2, 0, 0);
+                col /= kernelSum;
+
+                float4 D = (1 + _Tau) * (col.r * 100.0f) - _Tau * (col.g * 100.0f);
+
+                return D / 100.0f;
             }
             ENDCG
         }
@@ -214,25 +227,65 @@ Shader "Hidden/ExtendedDoG" {
             #pragma fragment fp
 
             float4 fp(v2f i) : SV_Target {
-                float2 col = 0;
-                float kernelSum1 = 0.0f;
-                float kernelSum2 = 0.0f;
+                float kernelSize = _SigmaM * 2;
 
-                int kernelSize = (_Sigma * 2 > 2) ? floor(_Sigma * 2) : 2;
+                float H = tex2D(_MainTex, i.uv).r;
+                float w = 1.0f;
 
-                for (int y = -kernelSize; y <= kernelSize; ++y) {
-                    float4 c = tex2D(_MainTex, i.uv + float2(0, y) * _MainTex_TexelSize.xy);
-                    float gauss1 = gaussian(_Sigma, y);
-                    float gauss2 = gaussian(_Sigma * _K, y);
+                float2 v = tex2D(_TFM, i.uv).xy * _MainTex_TexelSize;
 
-                    col.r += c.r * gauss1;
-                    kernelSum1 += gauss1;
+                float2 st0 = i.uv;
+                float2 v0 = v;
 
-                    col.g += c.g * gauss2;
-                    kernelSum2 += gauss2;
+                [loop]
+                for (int d = 0; d < kernelSize; ++d) {
+                    st0 += v0;
+                    float gauss = gaussian(_SigmaM, d);
+
+                    H += gauss * tex2D(_MainTex, st0).r;
+                    w += gauss;
+
+                    v0 = tex2D(_TFM, st0).xy * _MainTex_TexelSize.xy;
                 }
 
-                return float4(col.r / kernelSum1, col.g / kernelSum2, 0, 0);
+                float2 st1 = i.uv;
+                float2 v1 = v;
+
+                [loop]
+                for (int d = 0; d < kernelSize; ++d) {
+                    st1 -= v1;
+                    float gauss = gaussian(_SigmaM, d);
+
+                    H += gauss * tex2D(_MainTex, st0).r;
+                    w += gauss;
+
+                    v1 = tex2D(_TFM, st1).xy * _MainTex_TexelSize.xy;
+                }
+
+                float D = (H / w) * 100.0f;
+
+                if (_Thresholding == 1) {
+                    D = (D >= _Threshold) ? 1 : 1 + tanh(_Phi * (D - _Threshold));
+                } else if (_Thresholding == 2) {
+                    float a = 1.0f / _Thresholds;
+                    float b = _Threshold / 100.0f;
+                    float x = D / 100.0f;
+
+                    D = (x >= b) ? 1 : a * floor((pow(x, _Phi) - (a * b / 2.0f)) / (a * b) + 0.5f);
+                } else if (_Thresholding == 3) {
+                    float x = D / 100.0f;
+                    float qn = floor(x * float(_Thresholds) + 0.5f) / float(_Thresholds);
+                    float qs = smoothstep(-2.0, 2.0, _Phi * (x - qn) * 10.0f) - 0.5f;
+                    
+                    D = qn + qs / float(_Thresholds);
+                } else {
+                    D /= 100.0f;
+                }
+
+                if (_Invert)
+                    D = 1 - D;
+
+                return saturate(D);
             }
             ENDCG
         }
