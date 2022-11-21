@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class ExtendedDoG : MonoBehaviour {
     public Shader extendedDoG;
+    
+    [Range(0.0f, 5.0f)]
+    public float structureTensorDeviation = 2.0f;
 
     [Range(0.0f, 5.0f)]
     public float stdev = 2.0f;
@@ -17,7 +20,8 @@ public class ExtendedDoG : MonoBehaviour {
     public enum ThresholdMode {
         NoThreshold = 0,
         Tanh,
-        Quantization
+        Quantization,
+        SmoothQuantization
     } public ThresholdMode thresholdMode;
 
     [Range(1, 16)]
@@ -39,6 +43,7 @@ public class ExtendedDoG : MonoBehaviour {
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
+        dogMat.SetFloat("_SigmaC", structureTensorDeviation);
         dogMat.SetFloat("_Sigma", stdev);
         dogMat.SetFloat("_K", stdevScale);
         dogMat.SetFloat("_Tau", Sharpness);
@@ -48,15 +53,30 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetInt("_Thresholding", (int)thresholdMode);
         dogMat.SetInt("_Invert", invert ? 1 : 0);
 
+        var rgbToLab = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        Graphics.Blit(source, rgbToLab, dogMat, 0);
+        var structureTensor = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        Graphics.Blit(rgbToLab, structureTensor, dogMat, 1);
+        var eigenvectors1 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        Graphics.Blit(structureTensor, eigenvectors1, dogMat, 2);
+        var eigenvectors2 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        Graphics.Blit(eigenvectors1, eigenvectors2, dogMat, 3);
+        dogMat.SetTexture("_TFM", eigenvectors2);
+
         var gaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.RG32);
-        Graphics.Blit(source, gaussian1, dogMat, 0);
+        Graphics.Blit(rgbToLab, gaussian1, dogMat, 4);
         var gaussian2 = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.RG32);
-        Graphics.Blit(gaussian1, gaussian2, dogMat, 1);
+        Graphics.Blit(gaussian1, gaussian2, dogMat, 5);
 
         dogMat.SetTexture("_GaussianTex", gaussian2);
 
-        Graphics.Blit(source, destination, dogMat, 2);
-        RenderTexture.ReleaseTemporary(gaussian1);
+        Graphics.Blit(source, destination, dogMat, 6);
+        //Graphics.Blit(eigenvectors2, destination);
+        RenderTexture.ReleaseTemporary(rgbToLab);
+        RenderTexture.ReleaseTemporary(structureTensor);
+        RenderTexture.ReleaseTemporary(eigenvectors1);
+        RenderTexture.ReleaseTemporary(eigenvectors2);
         RenderTexture.ReleaseTemporary(gaussian2);
+        RenderTexture.ReleaseTemporary(gaussian1);
     }
 }
