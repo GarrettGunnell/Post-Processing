@@ -180,7 +180,7 @@ Shader "Hidden/ExtendedDoG" {
             ENDCG
         }
 
-        // Blur Pass 1
+        // FDoG Blur Pass 1
         Pass {
             CGPROGRAM
             #pragma vertex vp
@@ -221,7 +221,7 @@ Shader "Hidden/ExtendedDoG" {
             ENDCG
         }
 
-        // Blur Pass 2
+        // FDoG Blur Pass 2 + Thresholding
         Pass {
             CGPROGRAM
             #pragma vertex vp
@@ -322,14 +322,62 @@ Shader "Hidden/ExtendedDoG" {
             ENDCG
         }
 
-        // Difference Of Gaussians
+        // Non FDoG Blur Pass 1
         Pass {
             CGPROGRAM
             #pragma vertex vp
             #pragma fragment fp
 
             float4 fp(v2f i) : SV_Target {
-                float2 G = tex2D(_GaussianTex, i.uv).rg;
+                float2 col = 0;
+                float kernelSum1 = 0.0f;
+                float kernelSum2 = 0.0f;
+
+                int kernelSize = (_SigmaE * 2 > 2) ? floor(_SigmaE * 2) : 2;
+
+                for (int x = -kernelSize; x <= kernelSize; ++x) {
+                    float c = tex2D(_MainTex, i.uv + float2(x, 0) * _MainTex_TexelSize.xy).r;
+                    float gauss1 = gaussian(_SigmaE, x);
+                    float gauss2 = gaussian(_SigmaE * _K, x);
+
+                    col.r += c * gauss1;
+                    kernelSum1 += gauss1;
+
+                    col.g += c * gauss2;
+                    kernelSum2 += gauss2;
+                }
+
+                return float4(col.r / kernelSum1, col.g / kernelSum2, 0, 0);
+            }
+            ENDCG
+        }
+
+        // Non FDoG Blur Pass 2
+        Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float4 fp(v2f i) : SV_Target {
+                float2 col = 0;
+                float kernelSum1 = 0.0f;
+                float kernelSum2 = 0.0f;
+
+                int kernelSize = (_SigmaE * 2 > 2) ? floor(_SigmaE * 2) : 2;
+
+                for (int y = -kernelSize; y <= kernelSize; ++y) {
+                    float2 c = tex2D(_MainTex, i.uv + float2(0, y) * _MainTex_TexelSize.xy).rg;
+                    float gauss1 = gaussian(_SigmaE, y);
+                    float gauss2 = gaussian(_SigmaE * _K, y);
+
+                    col.r += c.r * gauss1;
+                    kernelSum1 += gauss1;
+
+                    col.g += c.g * gauss2;
+                    kernelSum2 += gauss2;
+                }
+
+                float2 G = float2(col.r / kernelSum1, col.g / kernelSum2);
 
                 float4 D = (1 + _Tau) * (G.r * 100.0f) - _Tau * (G.g * 100.0f);
 

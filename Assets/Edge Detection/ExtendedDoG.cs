@@ -8,6 +8,8 @@ public class ExtendedDoG : MonoBehaviour {
     [Range(0.0f, 5.0f)]
     public float structureTensorDeviation = 2.0f;
 
+    public bool useFlow = true;
+
     [Range(0.0f, 5.0f)]
     public float differenceOfGaussiansDeviation = 2.0f;
 
@@ -70,12 +72,16 @@ public class ExtendedDoG : MonoBehaviour {
         Graphics.Blit(eigenvectors1, eigenvectors2, dogMat, 3);
         dogMat.SetTexture("_TFM", eigenvectors2);
 
-        var gaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
-        Graphics.Blit(rgbToLab, gaussian1, dogMat, 4);
-        var gaussian2 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
-        Graphics.Blit(gaussian1, gaussian2, dogMat, 5);
 
-        dogMat.SetTexture("_GaussianTex", gaussian2);
+        var gaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        var gaussian2 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        if (useFlow) {    
+            Graphics.Blit(rgbToLab, gaussian1, dogMat, 4);
+            Graphics.Blit(gaussian1, gaussian2, dogMat, 5);
+        } else {
+            Graphics.Blit(rgbToLab, gaussian1, dogMat, 6);
+            Graphics.Blit(gaussian1, gaussian2, dogMat, 7);
+        }
 
         //Graphics.Blit(source, destination, dogMat, 6);
         Graphics.Blit(gaussian2, destination);
