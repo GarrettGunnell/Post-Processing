@@ -22,6 +22,9 @@ public class ExtendedDoG : MonoBehaviour {
     [Range(0.0f, 5.0f)]
     public float lineIntegralDeviation = 2.0f;
 
+    [Range(-20.0f, 20.0f)]
+    public float lineConvolutionStepSize = 1.0f;
+
     public bool calcDiffBeforeConvolution = true;
 
     public enum ThresholdMode {
@@ -58,6 +61,7 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetFloat("_Phi", softThreshold);
         dogMat.SetFloat("_Threshold", whitePoint);
         dogMat.SetFloat("_Thresholds", quantizerStep);
+        dogMat.SetFloat("_LineIntegralConvolutionStepSize", lineConvolutionStepSize);
         dogMat.SetInt("_Thresholding", (int)thresholdMode);
         dogMat.SetInt("_Invert", invert ? 1 : 0);
         dogMat.SetInt("_CalcDiffBeforeConvolution", calcDiffBeforeConvolution ? 1 : 0);

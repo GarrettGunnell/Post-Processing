@@ -32,7 +32,7 @@ Shader "Hidden/ExtendedDoG" {
         Texture2D _TFM;
         float4 _MainTex_TexelSize;
         int _Thresholding, _Invert, _CalcDiffBeforeConvolution;
-        float _SigmaC, _SigmaE, _SigmaM, _Threshold, _Thresholds, _K, _Tau, _Phi;
+        float _SigmaC, _SigmaE, _SigmaM, _Threshold, _Thresholds, _K, _Tau, _Phi, _LineIntegralConvolutionStepSize;
 
         SamplerState point_clamp_sampler;
         
@@ -234,13 +234,14 @@ Shader "Hidden/ExtendedDoG" {
                 float2 w = 0.0f;
 
                 float2 v = _TFM.Sample(point_clamp_sampler, i.uv).xy * _MainTex_TexelSize;
+                float stepSize = _LineIntegralConvolutionStepSize;
 
                 float2 st0 = i.uv;
                 float2 v0 = v;
 
                 [loop]
                 for (int d = 0; d < kernelSize; ++d) {
-                    st0 += v0;
+                    st0 += v0 * stepSize;
                     float3 c = tex2D(_MainTex, st0).rgb;
                     float gauss1 = gaussian(_SigmaM, d);
 
@@ -266,7 +267,7 @@ Shader "Hidden/ExtendedDoG" {
 
                 [loop]
                 for (int d = 0; d < kernelSize; ++d) {
-                    st1 -= v1;
+                    st1 -= v1 * stepSize;
                     float3 c = tex2D(_MainTex, st1).rgb;
                     float gauss1 = gaussian(_SigmaM, d);
 
