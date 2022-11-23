@@ -25,8 +25,12 @@ public class ColorCorrection : MonoBehaviour {
     private Material postProcessMat;
 
     void OnEnable() {
-        postProcessMat ??= new Material(postProcessingShader);
+        postProcessMat = new Material(postProcessingShader);
         postProcessMat.hideFlags = HideFlags.HideAndDontSave;
+    }
+
+    void OnDisable() {
+        postProcessMat = null;
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {

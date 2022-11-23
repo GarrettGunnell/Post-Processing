@@ -34,8 +34,12 @@ public class BlendModes : MonoBehaviour {
     private Material blendModesMat;
     
     void OnEnable() {
-        blendModesMat ??= new Material(blendModesShader);
+        blendModesMat = new Material(blendModesShader);
         blendModesMat.hideFlags = HideFlags.HideAndDontSave;
+    }
+
+    void OnDisable() {
+        blendModesMat = null;
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
