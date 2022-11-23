@@ -32,7 +32,7 @@ Shader "Hidden/ExtendedDoG" {
         Texture2D _TFM;
         float4 _MainTex_TexelSize;
         int _Thresholding, _Invert, _CalcDiffBeforeConvolution;
-        float _SigmaC, _SigmaE, _SigmaM, _Threshold, _Thresholds, _K, _Tau, _Phi, _LineIntegralConvolutionStepSize;
+        float _SigmaC, _SigmaE, _SigmaM, _SigmaA, _Threshold, _Thresholds, _K, _Tau, _Phi, _LineIntegralConvolutionStepSize, _EdgeSmoothConvolutionStepSize;
 
         SamplerState point_clamp_sampler;
         
@@ -404,6 +404,55 @@ Shader "Hidden/ExtendedDoG" {
                     D = 1 - D;
 
                 return saturate(D);
+            }
+            ENDCG
+        }
+
+    Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float4 fp(v2f i) : SV_Target {
+                float kernelSize = _SigmaA * 2;
+
+                float G = 0.0f;
+                float w = 0.0f;
+
+                float2 v = _TFM.Sample(point_clamp_sampler, i.uv).xy * _MainTex_TexelSize;
+                float stepSize = _EdgeSmoothConvolutionStepSize;
+
+                float2 st0 = i.uv;
+                float2 v0 = v;
+
+                [loop]
+                for (int d = 0; d < kernelSize; ++d) {
+                    st0 += v0 * stepSize;
+                    float c = tex2D(_MainTex, st0).r;
+                    float gauss1 = gaussian(_SigmaA, d);
+
+                    G += gauss1 * c;
+                    w += gauss1;
+
+                    v0 = _TFM.Sample(point_clamp_sampler, st0).xy * _MainTex_TexelSize.xy;
+                }
+
+                float2 st1 = i.uv;
+                float2 v1 = v;
+
+                [loop]
+                for (int d = 0; d < kernelSize; ++d) {
+                    st1 -= v1 * stepSize;
+                    float c = tex2D(_MainTex, st1).r;
+                    float gauss1 = gaussian(_SigmaA, d);
+
+                    G += gauss1 * c;
+                    w += gauss1;
+
+                    v1 = _TFM.Sample(point_clamp_sampler, st1).xy * _MainTex_TexelSize.xy;
+                }
+
+                return G /= w;
             }
             ENDCG
         }
