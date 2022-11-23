@@ -22,8 +22,7 @@ public class ExtendedDoG : MonoBehaviour {
     [Range(0.0f, 5.0f)]
     public float lineIntegralDeviation = 2.0f;
 
-    [Range(-20.0f, 20.0f)]
-    public float lineConvolutionStepSize = 1.0f;
+    public Vector2 lineConvolutionStepSizes = new Vector2(1.0f, 1.0f);
 
     public bool calcDiffBeforeConvolution = true;
 
@@ -49,8 +48,8 @@ public class ExtendedDoG : MonoBehaviour {
 
     [Range(0.0f, 5.0f)]
     public float edgeSmoothDeviation = 1.0f;
-    [Range(-20.0f, 20.0f)]
-    public float edgeSmoothStepSize = 1.0f;
+    
+    public Vector2 edgeSmoothStepSizes = new Vector2(1.0f, 1.0f);
 
     private Material dogMat;
     
@@ -69,8 +68,7 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetFloat("_Phi", softThreshold);
         dogMat.SetFloat("_Threshold", whitePoint);
         dogMat.SetFloat("_Thresholds", quantizerStep);
-        dogMat.SetFloat("_LineIntegralConvolutionStepSize", lineConvolutionStepSize);
-        dogMat.SetFloat("_EdgeSmoothConvolutionStepSize", edgeSmoothStepSize);
+        dogMat.SetVector("_IntegralConvolutionStepSizes", new Vector4(lineConvolutionStepSizes.x, lineConvolutionStepSizes.y, edgeSmoothStepSizes.x, edgeSmoothStepSizes.y));
         dogMat.SetInt("_Thresholding", (int)thresholdMode);
         dogMat.SetInt("_Invert", invert ? 1 : 0);
         dogMat.SetInt("_CalcDiffBeforeConvolution", calcDiffBeforeConvolution ? 1 : 0);

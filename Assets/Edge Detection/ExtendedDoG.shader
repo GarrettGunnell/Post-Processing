@@ -34,6 +34,8 @@ Shader "Hidden/ExtendedDoG" {
         int _Thresholding, _Invert, _CalcDiffBeforeConvolution;
         float _SigmaC, _SigmaE, _SigmaM, _SigmaA, _Threshold, _Thresholds, _K, _Tau, _Phi, _LineIntegralConvolutionStepSize, _EdgeSmoothConvolutionStepSize;
 
+        float4 _IntegralConvolutionStepSizes;
+
         SamplerState point_clamp_sampler;
         
         float gaussian(float sigma, float pos) {
@@ -241,7 +243,7 @@ Shader "Hidden/ExtendedDoG" {
 
                 [loop]
                 for (int d = 0; d < kernelSize; ++d) {
-                    st0 += v0 * stepSize;
+                    st0 += v0 * _IntegralConvolutionStepSizes.x;
                     float3 c = tex2D(_MainTex, st0).rgb;
                     float gauss1 = gaussian(_SigmaM, d);
 
@@ -267,7 +269,7 @@ Shader "Hidden/ExtendedDoG" {
 
                 [loop]
                 for (int d = 0; d < kernelSize; ++d) {
-                    st1 -= v1 * stepSize;
+                    st1 -= v1 * _IntegralConvolutionStepSizes.y;
                     float3 c = tex2D(_MainTex, st1).rgb;
                     float gauss1 = gaussian(_SigmaM, d);
 
@@ -427,7 +429,7 @@ Shader "Hidden/ExtendedDoG" {
 
                 [loop]
                 for (int d = 0; d < kernelSize; ++d) {
-                    st0 += v0 * stepSize;
+                    st0 += v0 * _IntegralConvolutionStepSizes.z;
                     float c = tex2D(_MainTex, st0).r;
                     float gauss1 = gaussian(_SigmaA, d);
 
@@ -442,7 +444,7 @@ Shader "Hidden/ExtendedDoG" {
 
                 [loop]
                 for (int d = 0; d < kernelSize; ++d) {
-                    st1 -= v1 * stepSize;
+                    st1 -= v1 * _IntegralConvolutionStepSizes.w;
                     float c = tex2D(_MainTex, st1).r;
                     float gauss1 = gaussian(_SigmaA, d);
 
