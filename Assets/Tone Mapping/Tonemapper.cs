@@ -38,7 +38,7 @@ public class Tonemapper : MonoBehaviour {
     private RenderTexture grayscale;
     
     void OnEnable() {
-        tonemapperMat ??= new Material(tonemapperShader);
+        tonemapperMat = new Material(tonemapperShader);
         
         if (grayscale == null) {
             grayscale = new RenderTexture(1920, 1080, 0, RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear);
@@ -75,6 +75,7 @@ public class Tonemapper : MonoBehaviour {
     }
 
     void OnDisable() {
+        tonemapperMat = null;
         grayscale.Release();
     }
 }

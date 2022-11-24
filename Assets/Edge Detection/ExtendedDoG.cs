@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class ExtendedDoG : MonoBehaviour {
     public Shader extendedDoG;
+
+    [Range(1, 4)]
+    public int superSample = 1;
     
     [Range(0.0f, 5.0f)]
     public float structureTensorDeviation = 2.0f;
@@ -73,13 +76,13 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetInt("_Invert", invert ? 1 : 0);
         dogMat.SetInt("_CalcDiffBeforeConvolution", calcDiffBeforeConvolution ? 1 : 0);
 
-        var rgbToLab = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        var rgbToLab = RenderTexture.GetTemporary(source.width * superSample, source.height * superSample, 0, source.format);
         Graphics.Blit(source, rgbToLab, dogMat, 0);
 
         
-        var structureTensor = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
-        var eigenvectors1 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
-        var eigenvectors2 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        var structureTensor = RenderTexture.GetTemporary(source.width * superSample, source.height * superSample, 0, source.format);
+        var eigenvectors1 = RenderTexture.GetTemporary(source.width * superSample, source.height * superSample, 0, source.format);
+        var eigenvectors2 = RenderTexture.GetTemporary(source.width * superSample, source.height * superSample, 0, source.format);
         if (useFlow || smoothEdges) {
             Graphics.Blit(rgbToLab, structureTensor, dogMat, 1);
             Graphics.Blit(structureTensor, eigenvectors1, dogMat, 2);
@@ -88,8 +91,8 @@ public class ExtendedDoG : MonoBehaviour {
         }
 
 
-        var gaussian1 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
-        var gaussian2 = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
+        var gaussian1 = RenderTexture.GetTemporary(source.width * superSample, source.height * superSample, 0, source.format);
+        var gaussian2 = RenderTexture.GetTemporary(source.width * superSample, source.height * superSample, 0, source.format);
         if (useFlow) {    
             Graphics.Blit(rgbToLab, gaussian1, dogMat, 4);
             Graphics.Blit(gaussian1, gaussian2, dogMat, 5);
