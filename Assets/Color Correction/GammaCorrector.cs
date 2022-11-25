@@ -10,9 +10,13 @@ public class GammaCorrector : MonoBehaviour {
 
     private Material gammaMat;
     
-    void Start() {
-        gammaMat ??= new Material(gammaCorrecter);
+    void OnEnable() {
+        gammaMat = new Material(gammaCorrecter);
         gammaMat.hideFlags = HideFlags.HideAndDontSave;
+    }
+
+    void OnDisable() {
+        gammaMat = null;
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {

@@ -60,6 +60,29 @@ public class ExtendedDoG : MonoBehaviour {
     
     public Vector2 edgeSmoothStepSizes = new Vector2(1.0f, 1.0f);
 
+    [Header("Cross Hatch Settings")]
+    public bool enableHatching = false;
+    public Texture hatchTexture = null;
+
+    [Range(0.0f, 5.0f)]
+    public float hatchResolution = 1.0f;
+    [Range(-180.0f, 180.0f)]
+    public float hatchRotation = 90.0f;
+    
+    [Range(0.0f, 100.0f)]
+    public float firstWhitePoint = 20.0f;
+    [Range(0.0f, 5.0f)]
+    public float hatchResolution2 = 1.0f;
+    [Range(-180.0f, 180.0f)]
+    public float firstHatchRotation = 60.0f;
+
+    [Range(0.0f, 100.0f)]
+    public float secondWhitePoint = 30.0f;
+    [Range(0.0f, 5.0f)]
+    public float hatchResolution3 = 1.0f;
+    [Range(-180.0f, 180.0f)]
+    public float secondHatchRotation = 120.0f;
+
     [Header("Blend Settings")]
     [Range(0.0f, 5.0f)]
     public float termStrength = 1.0f;
@@ -96,9 +119,17 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetFloat("_Tau", Sharpness);
         dogMat.SetFloat("_Phi", softThreshold);
         dogMat.SetFloat("_Threshold", whitePoint);
+        dogMat.SetFloat("_Threshold2", firstWhitePoint);
+        dogMat.SetFloat("_Threshold3", secondWhitePoint);
         dogMat.SetFloat("_Thresholds", quantizerStep);
         dogMat.SetFloat("_BlendStrength", blendStrength);
         dogMat.SetFloat("_DoGStrength", termStrength);
+        dogMat.SetFloat("_HatchTexRotation", hatchRotation);
+        dogMat.SetFloat("_HatchTexRotation1", firstHatchRotation);
+        dogMat.SetFloat("_HatchTexRotation2", secondHatchRotation);
+        dogMat.SetFloat("_HatchRes1", hatchResolution);
+        dogMat.SetFloat("_HatchRes2", hatchResolution2);
+        dogMat.SetFloat("_HatchRes3", hatchResolution3);
         dogMat.SetVector("_IntegralConvolutionStepSizes", new Vector4(lineConvolutionStepSizes.x, lineConvolutionStepSizes.y, edgeSmoothStepSizes.x, edgeSmoothStepSizes.y));
         dogMat.SetVector("_MinColor", minColor);
         dogMat.SetVector("_MaxColor", maxColor);
@@ -106,6 +137,8 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetInt("_BlendMode", (int)blendMode);
         dogMat.SetInt("_Invert", invert ? 1 : 0);
         dogMat.SetInt("_CalcDiffBeforeConvolution", calcDiffBeforeConvolution ? 1 : 0);
+        dogMat.SetInt("_HatchingEnabled", enableHatching ? 1 : 0);
+        dogMat.SetTexture("_HatchTex", hatchTexture);
 
         var rgbToLab = RenderTexture.GetTemporary(source.width * superSample, source.height * superSample, 0, source.format);
         Graphics.Blit(source, rgbToLab, dogMat, 0);
