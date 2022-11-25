@@ -7,12 +7,21 @@ public class ExtendedDoG : MonoBehaviour {
 
     [Range(1, 4)]
     public int superSample = 1;
-    
+
+    [Header("Edge Tangent Flow Settings")]
+    public bool useFlow = true;
+
     [Range(0.0f, 5.0f)]
     public float structureTensorDeviation = 2.0f;
 
-    public bool useFlow = true;
+    [Range(0.0f, 5.0f)]
+    public float lineIntegralDeviation = 2.0f;
 
+    public Vector2 lineConvolutionStepSizes = new Vector2(1.0f, 1.0f);
+
+    public bool calcDiffBeforeConvolution = true;
+
+    [Header("Difference Of Gaussians Settings")]
     [Range(0.0f, 5.0f)]
     public float differenceOfGaussiansDeviation = 2.0f;
 
@@ -22,19 +31,15 @@ public class ExtendedDoG : MonoBehaviour {
     [Range(0.0f, 100.0f)]
     public float Sharpness = 1.0f;
 
-    [Range(0.0f, 5.0f)]
-    public float lineIntegralDeviation = 2.0f;
-
-    public Vector2 lineConvolutionStepSizes = new Vector2(1.0f, 1.0f);
-
-    public bool calcDiffBeforeConvolution = true;
-
     public enum ThresholdMode {
         NoThreshold = 0,
         Tanh,
         Quantization,
         SmoothQuantization
-    } public ThresholdMode thresholdMode;
+    } 
+    
+    [Header("Threshold Settings")]
+    public ThresholdMode thresholdMode;
 
     [Range(1, 16)]
     public int quantizerStep = 2;
@@ -47,6 +52,7 @@ public class ExtendedDoG : MonoBehaviour {
 
     public bool invert = false;
 
+    [Header("Anti Aliasing Settings")]
     public bool smoothEdges = true;
 
     [Range(0.0f, 5.0f)]
@@ -54,6 +60,7 @@ public class ExtendedDoG : MonoBehaviour {
     
     public Vector2 edgeSmoothStepSizes = new Vector2(1.0f, 1.0f);
 
+    [Header("Blend Settings")]
     [Range(0.0f, 5.0f)]
     public float termStrength = 1.0f;
 
@@ -74,6 +81,10 @@ public class ExtendedDoG : MonoBehaviour {
     void OnEnable() {
         dogMat = new Material(extendedDoG);
         dogMat.hideFlags = HideFlags.HideAndDontSave;
+    }
+
+    void OnDisable() {
+        dogMat = null;
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
