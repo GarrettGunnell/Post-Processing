@@ -28,11 +28,12 @@ Shader "Hidden/ExtendedDoG" {
 
         #define PI 3.14159265358979323846f
         
-        sampler2D _MainTex, _GaussianTex, _kGaussianTex;
+        sampler2D _MainTex, _DogTex;
         Texture2D _TFM;
         float4 _MainTex_TexelSize;
-        int _Thresholding, _Invert, _CalcDiffBeforeConvolution;
-        float _SigmaC, _SigmaE, _SigmaM, _SigmaA, _Threshold, _Thresholds, _K, _Tau, _Phi, _LineIntegralConvolutionStepSize, _EdgeSmoothConvolutionStepSize;
+        int _Thresholding, _Invert, _CalcDiffBeforeConvolution, _BlendMode;
+        float _SigmaC, _SigmaE, _SigmaM, _SigmaA, _Threshold, _Thresholds, _K, _Tau, _Phi, _LineIntegralConvolutionStepSize, _EdgeSmoothConvolutionStepSize, _BlendStrength, _DoGStrength;
+        float3 _MinColor, _MaxColor;
 
         float4 _IntegralConvolutionStepSizes;
 
@@ -410,6 +411,7 @@ Shader "Hidden/ExtendedDoG" {
             ENDCG
         }
 
+    // Anti Aliasing Pass
     Pass {
             CGPROGRAM
             #pragma vertex vp
@@ -455,6 +457,32 @@ Shader "Hidden/ExtendedDoG" {
                 }
 
                 return G /= w;
+            }
+            ENDCG
+        }
+
+    // Blend
+    Pass {
+            CGPROGRAM
+            #pragma vertex vp
+            #pragma fragment fp
+
+            float4 fp(v2f i) : SV_Target {
+                float D = tex2D(_DogTex, i.uv) * _DoGStrength;
+                float3 col = tex2D(_MainTex, i.uv).rgb;
+
+                float3 output = 0.0f;
+                if (_BlendMode == 0)
+                    output = lerp(_MinColor, _MaxColor, D);
+                else if (_BlendMode == 1)
+                    output = lerp(_MinColor, col, D);
+                else if (_BlendMode == 2) {
+                    if (D < 0.5f)
+                        output = lerp(_MinColor, col, D * 2.0f);
+                    else
+                        output = lerp(col, _MaxColor, (D - 0.5f) * 2.0f);
+                }
+                return saturate(float4(lerp(col, output, _BlendStrength), 1.0f));
             }
             ENDCG
         }

@@ -54,6 +54,21 @@ public class ExtendedDoG : MonoBehaviour {
     
     public Vector2 edgeSmoothStepSizes = new Vector2(1.0f, 1.0f);
 
+    [Range(0.0f, 5.0f)]
+    public float termStrength = 1.0f;
+
+    public enum BlendMode {
+        NoBlend = 0,
+        Interpolate,
+        TwoPointInterpolate
+    } public BlendMode blendMode;
+
+    public Color minColor = new Color(0.0f, 0.0f, 0.0f);
+    public Color maxColor = new Color(1.0f, 1.0f, 1.0f);
+    
+    [Range(0.0f, 2.0f)]
+    public float blendStrength = 1;
+
     private Material dogMat;
     
     void OnEnable() {
@@ -71,8 +86,13 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetFloat("_Phi", softThreshold);
         dogMat.SetFloat("_Threshold", whitePoint);
         dogMat.SetFloat("_Thresholds", quantizerStep);
+        dogMat.SetFloat("_BlendStrength", blendStrength);
+        dogMat.SetFloat("_DoGStrength", termStrength);
         dogMat.SetVector("_IntegralConvolutionStepSizes", new Vector4(lineConvolutionStepSizes.x, lineConvolutionStepSizes.y, edgeSmoothStepSizes.x, edgeSmoothStepSizes.y));
+        dogMat.SetVector("_MinColor", minColor);
+        dogMat.SetVector("_MaxColor", maxColor);
         dogMat.SetInt("_Thresholding", (int)thresholdMode);
+        dogMat.SetInt("_BlendMode", (int)blendMode);
         dogMat.SetInt("_Invert", invert ? 1 : 0);
         dogMat.SetInt("_CalcDiffBeforeConvolution", calcDiffBeforeConvolution ? 1 : 0);
 
@@ -101,11 +121,16 @@ public class ExtendedDoG : MonoBehaviour {
             Graphics.Blit(gaussian1, gaussian2, dogMat, 7);
         }
 
-        //Graphics.Blit(source, destination, dogMat, 6);
+        var differenceOfGaussians = RenderTexture.GetTemporary(source.width * superSample, source.height * superSample, 0, source.format);
         if (smoothEdges)
-            Graphics.Blit(gaussian2, destination, dogMat, 8);
+            Graphics.Blit(gaussian2, differenceOfGaussians, dogMat, 8);
         else
-            Graphics.Blit(gaussian2, destination);
+            Graphics.Blit(gaussian2, differenceOfGaussians);
+
+        dogMat.SetTexture("_DogTex", differenceOfGaussians);
+
+        //Graphics.Blit(source, destination, dogMat, 6);
+        Graphics.Blit(source, destination, dogMat, 9);
 
         RenderTexture.ReleaseTemporary(rgbToLab);
         RenderTexture.ReleaseTemporary(structureTensor);
@@ -113,5 +138,6 @@ public class ExtendedDoG : MonoBehaviour {
         RenderTexture.ReleaseTemporary(eigenvectors2);
         RenderTexture.ReleaseTemporary(gaussian2);
         RenderTexture.ReleaseTemporary(gaussian1);
+        RenderTexture.ReleaseTemporary(differenceOfGaussians);
     }
 }
