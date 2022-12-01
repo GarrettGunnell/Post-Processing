@@ -64,24 +64,36 @@ public class ExtendedDoG : MonoBehaviour {
     public bool enableHatching = false;
     public Texture hatchTexture = null;
 
-    [Range(0.0f, 5.0f)]
+    [Space(10)]
+
+    [Range(0.0f, 6.0f)]
     public float hatchResolution = 1.0f;
     [Range(-180.0f, 180.0f)]
     public float hatchRotation = 90.0f;
     
+    [Space(10)]
     [Range(0.0f, 100.0f)]
-    public float firstWhitePoint = 20.0f;
-    [Range(0.0f, 5.0f)]
+    public float secondWhitePoint = 20.0f;
+    [Range(0.0f, 6.0f)]
     public float hatchResolution2 = 1.0f;
     [Range(-180.0f, 180.0f)]
-    public float firstHatchRotation = 60.0f;
+    public float secondHatchRotation = 60.0f;
 
+    [Space(10)]
     [Range(0.0f, 100.0f)]
-    public float secondWhitePoint = 30.0f;
-    [Range(0.0f, 5.0f)]
+    public float thirdWhitePoint = 30.0f;
+    [Range(0.0f, 6.0f)]
     public float hatchResolution3 = 1.0f;
     [Range(-180.0f, 180.0f)]
-    public float secondHatchRotation = 120.0f;
+    public float thirdHatchRotation = 120.0f;
+
+    [Space(10)]
+    [Range(0.0f, 100.0f)]
+    public float fourthWhitePoint = 30.0f;
+    [Range(0.0f, 6.0f)]
+    public float hatchResolution4 = 1.0f;
+    [Range(-180.0f, 180.0f)]
+    public float fourthHatchRotation = 120.0f;
 
     [Header("Blend Settings")]
     [Range(0.0f, 5.0f)]
@@ -119,17 +131,20 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetFloat("_Tau", Sharpness);
         dogMat.SetFloat("_Phi", softThreshold);
         dogMat.SetFloat("_Threshold", whitePoint);
-        dogMat.SetFloat("_Threshold2", firstWhitePoint);
-        dogMat.SetFloat("_Threshold3", secondWhitePoint);
+        dogMat.SetFloat("_Threshold2", secondWhitePoint);
+        dogMat.SetFloat("_Threshold3", thirdWhitePoint);
+        dogMat.SetFloat("_Threshold4", fourthWhitePoint);
         dogMat.SetFloat("_Thresholds", quantizerStep);
         dogMat.SetFloat("_BlendStrength", blendStrength);
         dogMat.SetFloat("_DoGStrength", termStrength);
         dogMat.SetFloat("_HatchTexRotation", hatchRotation);
-        dogMat.SetFloat("_HatchTexRotation1", firstHatchRotation);
-        dogMat.SetFloat("_HatchTexRotation2", secondHatchRotation);
+        dogMat.SetFloat("_HatchTexRotation1", secondHatchRotation);
+        dogMat.SetFloat("_HatchTexRotation2", thirdHatchRotation);
+        dogMat.SetFloat("_HatchTexRotation3", fourthHatchRotation);
         dogMat.SetFloat("_HatchRes1", hatchResolution);
         dogMat.SetFloat("_HatchRes2", hatchResolution2);
         dogMat.SetFloat("_HatchRes3", hatchResolution3);
+        dogMat.SetFloat("_HatchRes4", hatchResolution4);
         dogMat.SetVector("_IntegralConvolutionStepSizes", new Vector4(lineConvolutionStepSizes.x, lineConvolutionStepSizes.y, edgeSmoothStepSizes.x, edgeSmoothStepSizes.y));
         dogMat.SetVector("_MinColor", minColor);
         dogMat.SetVector("_MaxColor", maxColor);

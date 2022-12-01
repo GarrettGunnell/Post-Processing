@@ -32,8 +32,8 @@ Shader "Hidden/ExtendedDoG" {
         Texture2D _TFM;
         float4 _MainTex_TexelSize;
         int _Thresholding, _Invert, _CalcDiffBeforeConvolution, _BlendMode, _HatchingEnabled;
-        float _SigmaC, _SigmaE, _SigmaM, _SigmaA, _Threshold, _Threshold2, _Threshold3, _Thresholds, _K, _Tau, _Phi, _LineIntegralConvolutionStepSize, _EdgeSmoothConvolutionStepSize, _BlendStrength, _DoGStrength, _HatchTexRotation, _HatchTexRotation1, _HatchTexRotation2;
-        float _HatchRes1, _HatchRes2, _HatchRes3;
+        float _SigmaC, _SigmaE, _SigmaM, _SigmaA, _Threshold, _Threshold2, _Threshold3, _Threshold4, _Thresholds, _K, _Tau, _Phi, _LineIntegralConvolutionStepSize, _EdgeSmoothConvolutionStepSize, _BlendStrength, _DoGStrength, _HatchTexRotation, _HatchTexRotation1, _HatchTexRotation2, _HatchTexRotation3;
+        float _HatchRes1, _HatchRes2, _HatchRes3, _HatchRes4;
         float3 _MinColor, _MaxColor;
 
         float4 _IntegralConvolutionStepSizes;
@@ -191,7 +191,6 @@ Shader "Hidden/ExtendedDoG" {
             #pragma fragment fp
 
             float4 fp(v2f i) : SV_Target {
-
                 float2 t = _TFM.Sample(point_clamp_sampler, i.uv).xy;
                 float2 n = float2(t.y, -t.x);
                 float2 nabs = abs(n);
@@ -307,6 +306,7 @@ Shader "Hidden/ExtendedDoG" {
                     output.r = (D >= _Threshold) ? 1 : 1 + tanh(_Phi * (D - _Threshold));
                     output.g = (D >= _Threshold2) ? 1 : 1 + tanh(_Phi * (D - _Threshold2));
                     output.b = (D >= _Threshold3) ? 1 : 1 + tanh(_Phi * (D - _Threshold3));
+                    output.a = (D >= _Threshold4) ? 1 : 1 + tanh(_Phi * (D - _Threshold4));
                 } else if (_Thresholding == 2) {
                     float a = 1.0f / _Thresholds;
                     float b = _Threshold / 100.0f;
@@ -396,6 +396,7 @@ Shader "Hidden/ExtendedDoG" {
                     output.r = (D >= _Threshold) ? 1 : 1 + tanh(_Phi * (D - _Threshold));
                     output.g = (D >= _Threshold2) ? 1 : 1 + tanh(_Phi * (D - _Threshold2));
                     output.b = (D >= _Threshold3) ? 1 : 1 + tanh(_Phi * (D - _Threshold3));
+                    output.a = (D >= _Threshold4) ? 1 : 1 + tanh(_Phi * (D - _Threshold4));
                 } else if (_Thresholding == 2) {
                     float a = 1.0f / _Thresholds;
                     float b = _Threshold / 100.0f;
@@ -429,11 +430,10 @@ Shader "Hidden/ExtendedDoG" {
             float4 fp(v2f i) : SV_Target {
                 float kernelSize = _SigmaA * 2;
 
-                float3 G = 0.0f;
+                float4 G = 0.0f;
                 float w = 0.0f;
 
                 float2 v = _TFM.Sample(point_clamp_sampler, i.uv).xy * _MainTex_TexelSize;
-                float stepSize = _EdgeSmoothConvolutionStepSize;
 
                 float2 st0 = i.uv;
                 float2 v0 = v;
@@ -441,7 +441,7 @@ Shader "Hidden/ExtendedDoG" {
                 [loop]
                 for (int d = 0; d < kernelSize; ++d) {
                     st0 += v0 * _IntegralConvolutionStepSizes.z;
-                    float3 c = tex2D(_MainTex, st0).rgb;
+                    float4 c = tex2D(_MainTex, st0);
                     float gauss1 = gaussian(_SigmaA, d);
 
                     G += gauss1 * c;
@@ -456,7 +456,7 @@ Shader "Hidden/ExtendedDoG" {
                 [loop]
                 for (int d = 0; d < kernelSize; ++d) {
                     st1 -= v1 * _IntegralConvolutionStepSizes.w;
-                    float3 c = tex2D(_MainTex, st1).rgb;
+                    float4 c = tex2D(_MainTex, st1);
                     float gauss1 = gaussian(_SigmaA, d);
 
                     G += gauss1 * c;
@@ -465,7 +465,7 @@ Shader "Hidden/ExtendedDoG" {
                     v1 = _TFM.Sample(point_clamp_sampler, st1).xy * _MainTex_TexelSize.xy;
                 }
 
-                return float4(G /= w, 1.0f);
+                return G / w;
             }
             ENDCG
         }
@@ -477,19 +477,19 @@ Shader "Hidden/ExtendedDoG" {
             #pragma fragment fp
 
             float4 fp(v2f i) : SV_Target {
-                float3 D = tex2D(_DogTex, i.uv) * _DoGStrength;
+                float4 D = tex2D(_DogTex, i.uv) * _DoGStrength;
                 float3 col = tex2D(_MainTex, i.uv).rgb;
 
-                float3 output = 0.0f;
+                float4 output = 0.0f;
                 if (_BlendMode == 0)
-                    output = lerp(_MinColor, _MaxColor, D);
+                    output.rgb = lerp(_MinColor, _MaxColor, D.r);
                 else if (_BlendMode == 1)
-                    output = lerp(_MinColor, col, D);
+                    output.rgb = lerp(_MinColor, col, D.r);
                 else if (_BlendMode == 2) {
                     if (D.r < 0.5f)
-                        output = lerp(_MinColor, col, D * 2.0f);
+                        output.rgb = lerp(_MinColor, col, D.r * 2.0f);
                     else
-                        output = lerp(col, _MaxColor, (D - 0.5f) * 2.0f);
+                        output.rgb = lerp(col, _MaxColor, (D.r - 0.5f) * 2.0f);
                 }
 
                 if (_HatchingEnabled) {
@@ -499,23 +499,31 @@ Shader "Hidden/ExtendedDoG" {
                         cos(radians), -sin(radians),
                         sin(radians), cos(radians)
                     };
-                    float s1 = tex2D(_HatchTex, mul(R, hatchUV * _HatchRes1) * 0.5f + 0.5f).rgb;
+                    float3 s1 = tex2D(_HatchTex, mul(R, hatchUV * _HatchRes1) * 0.5f + 0.5f).rgb;
 
                     radians = _HatchTexRotation1 * PI / 180.0f;
                     float2x2 R2 = {
                         cos(radians), -sin(radians),
                         sin(radians), cos(radians)
                     };
-                    float s2 = tex2D(_HatchTex, mul(R2, hatchUV * _HatchRes2) * 0.5f + 0.5f).rgb;
+                    float3 s2 = tex2D(_HatchTex, mul(R2, hatchUV * _HatchRes2) * 0.5f + 0.5f).rgb;
 
                     radians = _HatchTexRotation2 * PI / 180.0f;
                     float2x2 R3 = {
                         cos(radians), -sin(radians),
                         sin(radians), cos(radians)
                     };
-                    float s3 = tex2D(_HatchTex, mul(R3, hatchUV * _HatchRes3) * 0.5f + 0.5f).rgb;
+                    float3 s3 = tex2D(_HatchTex, mul(R3, hatchUV * _HatchRes3) * 0.5f + 0.5f).rgb;
 
-                    output = lerp(s1, 1.0f, D.r) * lerp(s2, 1.0f, D.g) * lerp(s3, 1.0f, D.b);
+                    radians = _HatchTexRotation3 * PI / 180.0f;
+                    float2x2 R4 = {
+                        cos(radians), -sin(radians),
+                        sin(radians), cos(radians)
+                    };
+                    float3 s4 = tex2D(_HatchTex, mul(R4, hatchUV * _HatchRes4) * 0.5f + 0.5f).rgb;
+
+                    output.rgb = lerp(s1, 1.0f, D.r) * lerp(s2, 1.0f, D.g) * lerp(s3, 1.0f, D.b) * lerp(s4, 1.0f, D.a);
+                    
                 }
 
                 return saturate(float4(lerp(col, output, _BlendStrength), 1.0f));
