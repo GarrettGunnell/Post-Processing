@@ -31,9 +31,9 @@ Shader "Hidden/ExtendedDoG" {
         sampler2D _MainTex, _DogTex, _HatchTex;
         Texture2D _TFM;
         float4 _MainTex_TexelSize;
-        int _Thresholding, _Invert, _CalcDiffBeforeConvolution, _BlendMode, _HatchingEnabled, _EnableSecondLayer, _EnableThirdLayer, _EnableFourthLayer;
+        int _Thresholding, _Invert, _CalcDiffBeforeConvolution, _BlendMode, _HatchingEnabled, _EnableSecondLayer, _EnableThirdLayer, _EnableFourthLayer, _EnableColoredPencil;
         float _SigmaC, _SigmaE, _SigmaM, _SigmaA, _Threshold, _Threshold2, _Threshold3, _Threshold4, _Thresholds, _K, _Tau, _Phi, _LineIntegralConvolutionStepSize, _EdgeSmoothConvolutionStepSize, _BlendStrength, _DoGStrength, _HatchTexRotation, _HatchTexRotation1, _HatchTexRotation2, _HatchTexRotation3;
-        float _HatchRes1, _HatchRes2, _HatchRes3, _HatchRes4;
+        float _HatchRes1, _HatchRes2, _HatchRes3, _HatchRes4, _BrightnessOffset, _Saturation;
         float3 _MinColor, _MaxColor;
 
         float4 _IntegralConvolutionStepSizes;
@@ -501,7 +501,7 @@ Shader "Hidden/ExtendedDoG" {
                     };
                     float3 s1 = tex2D(_HatchTex, mul(R, hatchUV * _HatchRes1) * 0.5f + 0.5f).rgb;
 
-                    output.rgb = lerp(s1, 1.0f, D.r);
+                    output.rgb = lerp(s1, _MaxColor, D.r);
 
                     if (_EnableSecondLayer) {
                         radians = _HatchTexRotation1 * PI / 180.0f;
@@ -511,7 +511,7 @@ Shader "Hidden/ExtendedDoG" {
                         };
                         float3 s2 = tex2D(_HatchTex, mul(R2, hatchUV * _HatchRes2) * 0.5f + 0.5f).rgb;
 
-                        output.rgb *= lerp(s2, 1.0f, D.g);
+                        output.rgb *= lerp(s2, _MaxColor, D.g);
                     }
 
                     if (_EnableThirdLayer) {
@@ -522,7 +522,7 @@ Shader "Hidden/ExtendedDoG" {
                         };
                         float3 s3 = tex2D(_HatchTex, mul(R3, hatchUV * _HatchRes3) * 0.5f + 0.5f).rgb;
                      
-                        output.rgb *= lerp(s3, 1.0f, D.b);
+                        output.rgb *= lerp(s3, _MaxColor, D.b);
                     }
 
                     if (_EnableFourthLayer) {
@@ -533,7 +533,15 @@ Shader "Hidden/ExtendedDoG" {
                         };
                         float3 s4 = tex2D(_HatchTex, mul(R4, hatchUV * _HatchRes4) * 0.5f + 0.5f).rgb;
                      
-                        output.rgb *= lerp(s4, 1.0f, D.a);
+                        output.rgb *= lerp(s4, _MaxColor, D.a);
+
+                        if (_EnableColoredPencil) {
+                            float3 coloredPencil = col.rgb + _BrightnessOffset;
+                            coloredPencil = lerp(luminance(coloredPencil), coloredPencil, _Saturation);
+                            coloredPencil = lerp(coloredPencil, _MaxColor, output.rgb);
+
+                            return float4(lerp(col.rgb, coloredPencil, _BlendStrength), 1.0f);
+                        }
                     }
                 }
 
