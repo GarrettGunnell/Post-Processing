@@ -31,7 +31,7 @@ Shader "Hidden/ExtendedDoG" {
         sampler2D _MainTex, _DogTex, _HatchTex;
         Texture2D _TFM;
         float4 _MainTex_TexelSize;
-        int _Thresholding, _Invert, _CalcDiffBeforeConvolution, _BlendMode, _HatchingEnabled;
+        int _Thresholding, _Invert, _CalcDiffBeforeConvolution, _BlendMode, _HatchingEnabled, _EnableSecondLayer, _EnableThirdLayer, _EnableFourthLayer;
         float _SigmaC, _SigmaE, _SigmaM, _SigmaA, _Threshold, _Threshold2, _Threshold3, _Threshold4, _Thresholds, _K, _Tau, _Phi, _LineIntegralConvolutionStepSize, _EdgeSmoothConvolutionStepSize, _BlendStrength, _DoGStrength, _HatchTexRotation, _HatchTexRotation1, _HatchTexRotation2, _HatchTexRotation3;
         float _HatchRes1, _HatchRes2, _HatchRes3, _HatchRes4;
         float3 _MinColor, _MaxColor;
@@ -501,29 +501,40 @@ Shader "Hidden/ExtendedDoG" {
                     };
                     float3 s1 = tex2D(_HatchTex, mul(R, hatchUV * _HatchRes1) * 0.5f + 0.5f).rgb;
 
-                    radians = _HatchTexRotation1 * PI / 180.0f;
-                    float2x2 R2 = {
-                        cos(radians), -sin(radians),
-                        sin(radians), cos(radians)
-                    };
-                    float3 s2 = tex2D(_HatchTex, mul(R2, hatchUV * _HatchRes2) * 0.5f + 0.5f).rgb;
+                    output.rgb = lerp(s1, 1.0f, D.r);
 
-                    radians = _HatchTexRotation2 * PI / 180.0f;
-                    float2x2 R3 = {
-                        cos(radians), -sin(radians),
-                        sin(radians), cos(radians)
-                    };
-                    float3 s3 = tex2D(_HatchTex, mul(R3, hatchUV * _HatchRes3) * 0.5f + 0.5f).rgb;
+                    if (_EnableSecondLayer) {
+                        radians = _HatchTexRotation1 * PI / 180.0f;
+                        float2x2 R2 = {
+                            cos(radians), -sin(radians),
+                            sin(radians), cos(radians)
+                        };
+                        float3 s2 = tex2D(_HatchTex, mul(R2, hatchUV * _HatchRes2) * 0.5f + 0.5f).rgb;
 
-                    radians = _HatchTexRotation3 * PI / 180.0f;
-                    float2x2 R4 = {
-                        cos(radians), -sin(radians),
-                        sin(radians), cos(radians)
-                    };
-                    float3 s4 = tex2D(_HatchTex, mul(R4, hatchUV * _HatchRes4) * 0.5f + 0.5f).rgb;
+                        output.rgb *= lerp(s2, 1.0f, D.g);
+                    }
 
-                    output.rgb = lerp(s1, 1.0f, D.r) * lerp(s2, 1.0f, D.g) * lerp(s3, 1.0f, D.b) * lerp(s4, 1.0f, D.a);
-                    
+                    if (_EnableThirdLayer) {
+                        radians = _HatchTexRotation2 * PI / 180.0f;
+                        float2x2 R3 = {
+                            cos(radians), -sin(radians),
+                            sin(radians), cos(radians)
+                        };
+                        float3 s3 = tex2D(_HatchTex, mul(R3, hatchUV * _HatchRes3) * 0.5f + 0.5f).rgb;
+                     
+                        output.rgb *= lerp(s3, 1.0f, D.b);
+                    }
+
+                    if (_EnableFourthLayer) {
+                        radians = _HatchTexRotation3 * PI / 180.0f;
+                        float2x2 R4 = {
+                            cos(radians), -sin(radians),
+                            sin(radians), cos(radians)
+                        };
+                        float3 s4 = tex2D(_HatchTex, mul(R4, hatchUV * _HatchRes4) * 0.5f + 0.5f).rgb;
+                     
+                        output.rgb *= lerp(s4, 1.0f, D.a);
+                    }
                 }
 
                 return saturate(float4(lerp(col, output, _BlendStrength), 1.0f));

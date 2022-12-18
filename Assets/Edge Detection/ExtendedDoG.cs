@@ -72,6 +72,7 @@ public class ExtendedDoG : MonoBehaviour {
     public float hatchRotation = 90.0f;
     
     [Space(10)]
+    public bool enableSecondLayer = true;
     [Range(0.0f, 100.0f)]
     public float secondWhitePoint = 20.0f;
     [Range(0.0f, 6.0f)]
@@ -80,6 +81,7 @@ public class ExtendedDoG : MonoBehaviour {
     public float secondHatchRotation = 60.0f;
 
     [Space(10)]
+    public bool enableThirdLayer = true;
     [Range(0.0f, 100.0f)]
     public float thirdWhitePoint = 30.0f;
     [Range(0.0f, 6.0f)]
@@ -88,6 +90,7 @@ public class ExtendedDoG : MonoBehaviour {
     public float thirdHatchRotation = 120.0f;
 
     [Space(10)]
+    public bool enableFourthLayer = true;
     [Range(0.0f, 100.0f)]
     public float fourthWhitePoint = 30.0f;
     [Range(0.0f, 6.0f)]
@@ -145,6 +148,9 @@ public class ExtendedDoG : MonoBehaviour {
         dogMat.SetFloat("_HatchRes2", hatchResolution2);
         dogMat.SetFloat("_HatchRes3", hatchResolution3);
         dogMat.SetFloat("_HatchRes4", hatchResolution4);
+        dogMat.SetInt("_EnableSecondLayer", enableSecondLayer ? 1 : 0);
+        dogMat.SetInt("_EnableThirdLayer", enableThirdLayer ? 1 : 0);
+        dogMat.SetInt("_EnableFourthLayer", enableFourthLayer ? 1 : 0);
         dogMat.SetVector("_IntegralConvolutionStepSizes", new Vector4(lineConvolutionStepSizes.x, lineConvolutionStepSizes.y, edgeSmoothStepSizes.x, edgeSmoothStepSizes.y));
         dogMat.SetVector("_MinColor", minColor);
         dogMat.SetVector("_MaxColor", maxColor);
