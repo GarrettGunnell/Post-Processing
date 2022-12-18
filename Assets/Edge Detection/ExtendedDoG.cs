@@ -14,7 +14,7 @@ public class ExtendedDoG : MonoBehaviour {
     [Range(0.0f, 5.0f)]
     public float structureTensorDeviation = 2.0f;
 
-    [Range(0.0f, 5.0f)]
+    [Range(0.0f, 20.0f)]
     public float lineIntegralDeviation = 2.0f;
 
     public Vector2 lineConvolutionStepSizes = new Vector2(1.0f, 1.0f);
@@ -22,7 +22,7 @@ public class ExtendedDoG : MonoBehaviour {
     public bool calcDiffBeforeConvolution = true;
 
     [Header("Difference Of Gaussians Settings")]
-    [Range(0.0f, 5.0f)]
+    [Range(0.0f, 10.0f)]
     public float differenceOfGaussiansDeviation = 2.0f;
 
     [Range(0.1f, 5.0f)]
@@ -55,7 +55,7 @@ public class ExtendedDoG : MonoBehaviour {
     [Header("Anti Aliasing Settings")]
     public bool smoothEdges = true;
 
-    [Range(0.0f, 5.0f)]
+    [Range(0.0f, 10.0f)]
     public float edgeSmoothDeviation = 1.0f;
     
     public Vector2 edgeSmoothStepSizes = new Vector2(1.0f, 1.0f);

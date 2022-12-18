@@ -11,9 +11,13 @@ public class HueShifter : MonoBehaviour {
     
     private Material hueShiftMat;
 
-    void Start() {
+    void OnEnable() {
         hueShiftMat ??= new Material(hueShiftShader);
         hueShiftMat.hideFlags = HideFlags.HideAndDontSave;
+    }
+
+    void OnDisable() {
+        hueShiftMat = null;
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination) {
