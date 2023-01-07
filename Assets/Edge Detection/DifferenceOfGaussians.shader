@@ -110,8 +110,12 @@ Shader "Hidden/DifferenceOfGaussians" {
 
                 float4 D = (G.r - _Tau * G.g);
 
-                if (_Thresholding)
-                    D = (D >= _Threshold) ? 1 : (_Tanh) ? 1 + tanh(_Phi * (D - _Threshold)) : 0;
+                if (_Thresholding) {
+                    if (_Tanh)
+                        D = (D >= _Threshold) ? 1 : 1 + tanh(_Phi * (D - _Threshold));
+                    else
+                        D = (D >= _Threshold) ? 1 : 0;
+                }
 
                 if (_Invert)
                     D = 1 - D;

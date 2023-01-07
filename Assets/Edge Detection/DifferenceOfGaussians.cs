@@ -24,7 +24,7 @@ public class DifferenceOfGaussians : MonoBehaviour {
     [Range(0.01f, 100.0f)]
     public float phi = 1.0f;
 
-    [Range(0.0f, 0.5f)]
+    [Range(-1.0f, 1.0f)]
     public float threshold = 0.005f;
 
     public bool invert = false;
