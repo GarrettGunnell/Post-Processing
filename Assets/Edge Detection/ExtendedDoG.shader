@@ -233,8 +233,9 @@ Shader "Hidden/ExtendedDoG" {
             float4 fp(v2f i) : SV_Target {
                 float kernelSize = _SigmaM * 2;
 
-                float2 G = 0.0f;
-                float2 w = 0.0f;
+                float2 w = 1.0f;
+                float3 c = tex2D(_MainTex, i.uv).rgb;
+                float2 G = _CalcDiffBeforeConvolution ? float2(c.b, 0.0f) : c.rg;
 
                 float2 v = _TFM.Sample(point_clamp_sampler, i.uv).xy * _MainTex_TexelSize;
                 float stepSize = _LineIntegralConvolutionStepSize;
@@ -243,7 +244,7 @@ Shader "Hidden/ExtendedDoG" {
                 float2 v0 = v;
 
                 [loop]
-                for (int d = 0; d < kernelSize; ++d) {
+                for (int d = 1; d < kernelSize; ++d) {
                     st0 += v0 * _IntegralConvolutionStepSizes.x;
                     float3 c = tex2D(_MainTex, st0).rgb;
                     float gauss1 = gaussian(_SigmaM, d);
@@ -269,7 +270,7 @@ Shader "Hidden/ExtendedDoG" {
                 float2 v1 = v;
 
                 [loop]
-                for (int d = 0; d < kernelSize; ++d) {
+                for (int d = 1; d < kernelSize; ++d) {
                     st1 -= v1 * _IntegralConvolutionStepSizes.y;
                     float3 c = tex2D(_MainTex, st1).rgb;
                     float gauss1 = gaussian(_SigmaM, d);
@@ -430,8 +431,8 @@ Shader "Hidden/ExtendedDoG" {
             float4 fp(v2f i) : SV_Target {
                 float kernelSize = _SigmaA * 2;
 
-                float4 G = 0.0f;
-                float w = 0.0f;
+                float4 G = tex2D(_MainTex, i.uv);
+                float w = 1.0f;
 
                 float2 v = _TFM.Sample(point_clamp_sampler, i.uv).xy * _MainTex_TexelSize;
 
@@ -439,7 +440,7 @@ Shader "Hidden/ExtendedDoG" {
                 float2 v0 = v;
 
                 [loop]
-                for (int d = 0; d < kernelSize; ++d) {
+                for (int d = 1; d < kernelSize; ++d) {
                     st0 += v0 * _IntegralConvolutionStepSizes.z;
                     float4 c = tex2D(_MainTex, st0);
                     float gauss1 = gaussian(_SigmaA, d);
@@ -454,7 +455,7 @@ Shader "Hidden/ExtendedDoG" {
                 float2 v1 = v;
 
                 [loop]
-                for (int d = 0; d < kernelSize; ++d) {
+                for (int d = 1; d < kernelSize; ++d) {
                     st1 -= v1 * _IntegralConvolutionStepSizes.w;
                     float4 c = tex2D(_MainTex, st1);
                     float gauss1 = gaussian(_SigmaA, d);
