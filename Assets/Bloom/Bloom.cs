@@ -26,8 +26,10 @@ public class Bloom : MonoBehaviour {
     private Material bloomMat;
 
     void OnEnable() {
-        bloomMat = new Material(bloomShader);
-        bloomMat.hideFlags = HideFlags.HideAndDontSave;
+        if (bloomMat == null) {
+            bloomMat = new Material(bloomShader);
+            bloomMat.hideFlags = HideFlags.HideAndDontSave;
+        }
     }
 
     // Bloom logic largely adapted from: https://catlikecoding.com/unity/tutorials/advanced-rendering/bloom/
