@@ -75,7 +75,7 @@ public class ExtendedDoG : MonoBehaviour {
     public bool enableSecondLayer = true;
     [Range(0.0f, 100.0f)]
     public float secondWhitePoint = 20.0f;
-    [Range(0.0f, 6.0f)]
+    [Range(0.0f, 8.0f)]
     public float hatchResolution2 = 1.0f;
     [Range(-180.0f, 180.0f)]
     public float secondHatchRotation = 60.0f;
