@@ -60,6 +60,14 @@ These effects are modular only for ease of experimentation and finding what look
 * * Anisotropic Kuwahara w/ Polynomial Weighting
 * **Zoom**
 * * Anti Aliased Pixel Art Upscaler
+* **Difference Of Gaussians**
+* * Basic
+* * Extended
+* **Vignette**
+* **Chromatic Aberration**
+* **Blur**
+* * Box
+* * Gaussian
 
 # Examples
 
