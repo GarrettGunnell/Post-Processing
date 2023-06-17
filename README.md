@@ -8,6 +8,8 @@ This is made for Unity 2021.3.1 using the built in pipeline.
 
 These effects are modular only for ease of experimentation and finding what looks best for a given scene. Once desired effects have been found, many of the shaders can be condensed into a singular pass to reduce overdraw and maximize performance.
 
+Most of these are also not production ready, they are meant to be referenced for those looking to implement the effects themselves. While they are generally well optimized, they may not account for specific edge cases or might be lacking in desirable features.
+
 ## Features
 
 * **Fog**
